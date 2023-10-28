@@ -2,6 +2,7 @@ import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
 from models.user_model import User
+from models.login_model import Login
 from fastapi.encoders import jsonable_encoder
 
 class UserController:
@@ -127,11 +128,11 @@ class UserController:
         finally:
             conn.close()
 
-    def authenticate_user(self, email: str, password: str):
+    def authenticate_user(self, login: Login):
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM usuarios WHERE correo = %s AND contraseña = %s", (email, password))
+            cursor.execute("SELECT * FROM usuarios WHERE correo = %s AND contraseña = %s", (login.email, login.password))
             result = cursor.fetchone()
             if result:
                 user_data = {

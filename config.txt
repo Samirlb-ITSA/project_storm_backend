@@ -15,6 +15,6 @@ Python -m venv project_storm_backend
 pip install fastapi
 pip install "uvicorn[standard]"
 pip install mysql-connector-python
-
+pip install python-multipart
 
 

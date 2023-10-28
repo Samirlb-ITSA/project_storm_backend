@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Form
 from controllers.user_controller import *
 from models.user_model import User
+from models.login_model import Login
 
 router = APIRouter()
 
@@ -34,6 +35,6 @@ async def delete_user(user_id: int):
     return rpta
 
 @router.post("/login")
-async def login(email: str = Form(...), password: str = Form(...)):
-    user_data = nuevo_usuario.authenticate_user(email, password)
+async def login(login: Login):
+    user_data = nuevo_usuario.authenticate_user(login)
     return user_data
