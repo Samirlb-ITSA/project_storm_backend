@@ -1,0 +1,20 @@
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+cd project_storm_backend
+cd .\Scripts
+.\activate
+
+cd ../../app
+
+uvicorn main:app --reload
+
+Get-ExecutionPolicy
+Set-ExecutionPolicy Unrestricted
+Get-ExecutionPolicy
+
+Python -m venv project_storm_backend
+pip install fastapi
+pip install "uvicorn[standard]"
+pip install mysql-connector-python
+
+
+
