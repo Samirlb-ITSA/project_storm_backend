@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Form, Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordBearer
 from controllers.user_controller import *
 from models.user_model import User
 from models.login_model import Login
+from routes.auth_routes import get_current_active_user
 
 router = APIRouter()
 
@@ -17,7 +18,7 @@ async def create_user(user: User):
 
 
 @router.get("/get_user/{user_id}",response_model=User)
-async def get_user(user_id: int, token: str = Depends(oauth2_scheme)):
+async def get_user(user_id: int, user: User = Depends(get_current_active_user)):
     rpta = nuevo_usuario.get_user(user_id)
     return rpta
 
