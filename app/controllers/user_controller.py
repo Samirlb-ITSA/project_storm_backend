@@ -4,6 +4,9 @@ from config.db_config import get_db_connection
 from models.user_model import User
 from models.login_model import Login
 from fastapi.encoders import jsonable_encoder
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class UserController:
         
@@ -11,7 +14,8 @@ class UserController:
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO `usuarios`(`nombre`, `apellido`, `correo`, `celular`, `direccion`, `contraseña`, `estado`) VALUES (%s, %s, %s, %s, %s, %s, %s)", (user.nombre, user.apellido, user.correo, user.celular, user.direccion, user.contraseña, user.estado))
+            contraseña = pwd_context.hash(user.contraseña)
+            cursor.execute("INSERT INTO `usuarios`(`nombre`, `apellido`, `correo`, `celular`, `direccion`, `contraseña`, `estado`) VALUES (%s, %s, %s, %s, %s, %s, %s)", (user.nombre, user.apellido, user.correo, user.celular, user.direccion, contraseña , user.estado))
             conn.commit()
             postid=cursor.lastrowid
             cursor.execute("INSERT INTO `rolxusuario`(`idusuario`, `idrol`) VALUES (%s, %s)", (postid, 1))
@@ -19,6 +23,7 @@ class UserController:
             conn.close()
             return {"resultado": "Usuario creado"}
         except mysql.connector.Error as err:
+            print("Error creating user: ", err)
             conn.rollback()
         finally:
             conn.close()
@@ -90,7 +95,33 @@ class UserController:
             conn.rollback()
         finally:
             conn.close()
+    
+    def getUsersFromDb(self):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM usuarios")
+            result = cursor.fetchall()
+            users = []
+            for data in result:
+                user = User()
+                user.idusuario = data[0]
+                user.nombre = data[1]
+                user.apellido = data[2]
+                user.correo = data[3]
+                user.celular = data[4]
+                user.direccion = data[5]
+                user.contraseña = data[6]
+                user.estado = data[7]
+                user.fechacreacion = data[8]
+                users.append(user)
+            return users
 
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+            
 
     def update_user(self, user: User):
         try:

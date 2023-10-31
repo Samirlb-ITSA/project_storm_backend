@@ -5,6 +5,7 @@ from routes.empresa_routes import router as empresa_router
 from routes.carrera_routes import router as carrera_router
 from routes.ofertas_routes import router as ofertas_router
 from routes.aplicante_routes import router as aplicante_router
+from routes.auth_routes import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -24,6 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(rol_router)
 app.include_router(empresa_router)
