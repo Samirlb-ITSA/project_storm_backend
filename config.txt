@@ -19,4 +19,6 @@ pip install "python-jose[cryptography]"
 pip install "passlib[bcrypt]"
 pip install SQLAlchemy
 
+// Delete cache
+find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
 
