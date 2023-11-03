@@ -19,6 +19,11 @@ pip install "python-jose[cryptography]"
 pip install "passlib[bcrypt]"
 pip install SQLAlchemy
 
-// Delete cache
-find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
+// Delete cache on MacOs
+find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf (on MacOs)
+Get-ChildItem . -include __pycache__,*.pyc,*.pyo -Recurse | Remove-Item -Force -Recurse (Windows)
+
+// Disable __pycache__ 
+echo 'export PYTHONDONTWRITEBYTECODE=1' >> ~/.zshrc (on MacOs)
+setx PYTHONDONTWRITEBYTECODE 1 (Windows)
 
