@@ -14,9 +14,9 @@ Get-ExecutionPolicy
 Python -m venv project_storm_backend
 pip install fastapi
 pip install "uvicorn[standard]"
-pip install mysql-connector-python
 pip install python-multipart
 pip install "python-jose[cryptography]"
 pip install "passlib[bcrypt]"
+pip install SQLAlchemy
 
 

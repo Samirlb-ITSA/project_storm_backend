@@ -1,5 +1,10 @@
-from pydantic import BaseModel
+from sqlalchemy import Column, Integer
+from sqlalchemy.ext.declarative import declarative_base
 
-class Rol(BaseModel):
-    idrol: int
-    nombre: str
+Base = declarative_base()
+
+class Role(Base):
+    __tablename__ = "rolxusuario"
+
+    idusuario = Column(Integer, primary_key=True, index=True)
+    idrol = Column(Integer)

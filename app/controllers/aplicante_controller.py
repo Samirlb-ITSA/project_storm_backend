@@ -1,115 +1,74 @@
 import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.aplicante_model import Aplicante
+from models.aplicante_model import Aplicante, AplicanteIn
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.exc import SQLAlchemyError
+from pydantic.main import model_dump
 
 class AplicanteController:
-        
-    def create_aplicante(self, aplicante: Aplicante):   
+    def create_aplicante(aplicante: AplicanteIn):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO `aplicantes`(`idoferta`, `idusuario`) VALUES (%s, %s)", (aplicante.idoferta, aplicante.idusuario))
-            conn.commit()
-            conn.close()
+            db_aplicante = Aplicante(**model_dump(aplicante))
+            db.add(db_aplicante)
+            db.commit()
             return {"resultado": "Aplicante creado"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al crear el aplicante"}
         finally:
-            conn.close()
-        
+            db.close()
 
-    def get_aplicante(self, aplicante_id: int):
+    def get_aplicante(aplicante_id: int):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM aplicantes WHERE idaplicante = %s", (aplicante_id,))
-            result = cursor.fetchone()
-            payload = []
-            content = {} 
-            
-            content={
-                    'idaplicante':int(result[0]),
-                    'idoferta':int(result[1]),
-                    'idusuario':int(result[2])
-            }
-            payload.append(content)
-            
-            json_data = jsonable_encoder(content)            
-            if result:
-               return  json_data
-            else:
-                raise HTTPException(status_code=404, detail="Aplicante not found")  
-                
-        except mysql.connector.Error as err:
-            conn.rollback()
+            aplicante = db.query(Aplicante).filter(Aplicante.idaplicante == aplicante_id).first()
+            if aplicante is None:
+                raise HTTPException(status_code=404, detail="Aplicante not found")
+            return jsonable_encoder(aplicante)
         finally:
-            conn.close()
-       
-    def get_aplicantes(self):
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM aplicante")
-            result = cursor.fetchall()
-            payload = []
-            content = {} 
-            for data in result:
-                content={
-                    'idaplicante':data[0],
-                    'nombre':data[1],
-                    'correo':data[2],
-                    'celular':data[3],
-                    'direccion':data[4],
-                    'nit':data[5]
-                }
-                payload.append(content)
-                content = {}
-            json_data = jsonable_encoder(payload)        
-            if result:
-               return {"resultado": json_data}
-            else:
-                raise HTTPException(status_code=404, detail="Aplicante not found")  
-                
-        except mysql.connector.Error as err:
-            conn.rollback()
-        finally:
-            conn.close()
+            db.close()
 
-    def update_aplicante(self, aplicante: Aplicante):
+    def get_aplicantes():
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""UPDATE aplicante 
-                           SET idaplicante = %s,
-                           nombre = %s,
-                           correo = %s,
-                           celular = %s,
-                           direccion = %s,
-                           nit = %s
-                           WHERE idaplicante = %s""", (aplicante.idaplicante,
-                           aplicante.nombre,aplicante.correo,aplicante.celular,
-                           aplicante.direccion,aplicante.nit,aplicante.idaplicante,))
-            conn.commit()
-            conn.close()
+            aplicantes = db.query(Aplicante).all()
+            if not aplicantes:
+                raise HTTPException(status_code=404, detail="No aplicantes found")
+            return {"resultado": jsonable_encoder(aplicantes)}
+        finally:
+            db.close()
+
+    def update_aplicante(aplicante: AplicanteIn):
+        db = get_db_connection()
+        try:
+            db_aplicante = db.query(Aplicante).filter(Aplicante.idaplicante == aplicante.idaplicante).first()
+            if db_aplicante is None:
+                raise HTTPException(status_code=404, detail="Aplicante not found")
+            for var, value in vars(aplicante).items():
+                setattr(db_aplicante, var, value) if value else None
+            db.commit()
             return {"resultado": "Aplicante actualizada"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al actualizar el aplicante"}
         finally:
-            conn.close()
+            db.close()
 
-    def delete_aplicante(self, aplicante_id: int):
+    def delete_aplicante(aplicante_id: int):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM aplicante WHERE idaplicante = %s", (aplicante_id,))
-            conn.commit()
-            conn.close()
+            db_aplicante = db.query(Aplicante).filter(Aplicante.idaplicante == aplicante_id).first()
+            if db_aplicante is None:
+                raise HTTPException(status_code=404, detail="Aplicante not found")
+            db.delete(db_aplicante)
+            db.commit()
             return {"resultado": "Aplicante eliminada"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al eliminar el aplicante"}
         finally:
-            conn.close()
+            db.close()
 
 ##aplicante_controller = AplicanteController()

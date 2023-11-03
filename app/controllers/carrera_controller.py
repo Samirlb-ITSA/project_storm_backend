@@ -1,100 +1,73 @@
-import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.carrera_model import Carrera
+from models.carrera_model import Carrera, CarreraIn
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.exc import SQLAlchemyError
+from pydantic.main import model_dump
 
 class CarreraController:
-        
-    def create_carrera(self, carrera: Carrera):   
+    def create_carrera(carrera: CarreraIn):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO `carrera`(`nombre`) VALUES (%s)", (carrera.nombre))
-            conn.commit()
-            conn.close()
-            return {"resultado": "Carrera creado"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+            db_carrera = Carrera(**model_dump(carrera))
+            db.add(db_carrera)
+            db.commit()
+            return {"resultado": "Carrera creada"}
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al crear la carrera"}
         finally:
-            conn.close()
+            db.close()
 
-    def get_carrera(self, carrera_id: int):
+    def get_carrera(carrera_id: int):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM carrera WHERE idcarrera = %s", (carrera_id,))
-            result = cursor.fetchone()
-            payload = []
-            content = {} 
-
-            content={
-                    'idcarrera':int(result[0]),
-                    'nombre':result[1],
-            }
-            payload.append(content)
-
-            json_data = jsonable_encoder(content)
-            if result:
-               return  json_data
-            else:
+            carrera = db.query(Carrera).filter(Carrera.idcarrera == carrera_id).first()
+            if carrera is None:
                 raise HTTPException(status_code=404, detail="Carrera not found")
-
-        except mysql.connector.Error as err:
-            conn.rollback()
+            return jsonable_encoder(carrera)
         finally:
-            conn.close()
+            db.close()
 
-    def get_carreras(self):
+    def get_carreras():
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM carrera")
-            result = cursor.fetchall()
-            payload = []
-            content = {} 
-            for data in result:
-                content={
-                    'idcarrera':data[0],
-                    'nombre':data[1],
-
-                }
-                payload.append(content)
-                content = {}
-            json_data = jsonable_encoder(payload)
-            if result:
-               return {"resultado": json_data}
-            else:
-                raise HTTPException(status_code=404, detail="Carrera not found")  
-        except mysql.connector.Error as err:
-            conn.rollback()
+            carreras = db.query(Carrera).all()
+            if not carreras:
+                raise HTTPException(status_code=404, detail="No carreras found")
+            return {"resultado": jsonable_encoder(carreras)}
         finally:
-            conn.close()
+            db.close()
 
-    def update_carrera(self, carrera: Carrera):
+    def update_carrera(carrera: CarreraIn):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("UPDATE carrera SET idcarrera = %s, nombre = %s WHERE idcarrera = %s", (carrera.idcarrera,carrera.nombre,carrera.idcarrera,))
-            conn.commit()
-            conn.close()
+            db_carrera = db.query(Carrera).filter(Carrera.idcarrera == carrera.idcarrera).first()
+            if db_carrera is None:
+                raise HTTPException(status_code=404, detail="Carrera not found")
+            for var, value in vars(carrera).items():
+                setattr(db_carrera, var, value) if value else None
+            db.commit()
             return {"resultado": "Carrera actualizada"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al actualizar la carrera"}
         finally:
-            conn.close()
+            db.close()
 
-    def delete_carrera(self, carrera_id: int):
+    def delete_carrera(carrera_id: int):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM carrera WHERE idcarrera = %s", (carrera_id,))
-            conn.commit()
-            conn.close()
+            db_carrera = db.query(Carrera).filter(Carrera.idcarrera == carrera_id).first()
+            if db_carrera is None:
+                raise HTTPException(status_code=404, detail="Carrera not found")
+            db.delete(db_carrera)
+            db.commit()
             return {"resultado": "Carrera eliminada"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al eliminar la carrera"}
         finally:
-            conn.close()
+            db.close()
 
 ##user_controller = UserController()
