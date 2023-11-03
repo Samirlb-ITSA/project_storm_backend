@@ -11,7 +11,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -24,179 +23,33 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `aplicantes`
+-- Table structure for table `users`
 --
 
-CREATE TABLE `aplicantes` (
-  `idaplicante` int(11) NOT NULL,
-  `idoferta` int(11) NOT NULL,
-  `idusuario` int(11) NOT NULL
+CREATE TABLE `users` (
+  `userid` int(11) NOT NULL,
+  `firstname` varchar(100) NOT NULL,
+  `lastname` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `cellphone` int(100) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `creationdate` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `aplicantes`
---
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`userid`),
+  ADD UNIQUE KEY `email` (`email`);
 
-INSERT INTO `aplicantes` (`idaplicante`, `idoferta`, `idusuario`) VALUES
-(1, 1, 2),
-(2, 1, 3);
-
--- --------------------------------------------------------
+ALTER TABLE `users`
+  MODIFY `userid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- Table structure for table `atributos`
+-- Dumping data for table `users`
 --
 
-CREATE TABLE `atributos` (
-  `idatributo` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `atributosxusuario`
---
-
-CREATE TABLE `atributosxusuario` (
-  `idatributosxusuario` int(11) NOT NULL,
-  `idatributos` int(11) NOT NULL,
-  `idusuario` int(11) NOT NULL,
-  `campo` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `carrera`
---
-
-CREATE TABLE `carrera` (
-  `idcarrera` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `carrera`
---
-
-INSERT INTO `carrera` (`idcarrera`, `nombre`) VALUES
-(1, 'Ing Sistemas');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `empresa`
---
-
-CREATE TABLE `empresa` (
-  `idempresa` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `correo` varchar(100) NOT NULL,
-  `celular` int(11) NOT NULL,
-  `direccion` varchar(100) NOT NULL,
-  `nit` int(11) NOT NULL,
-  `estado` tinyint(1) NOT NULL,
-  `fechacreacion` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `empresa`
---
-
-INSERT INTO `empresa` (`idempresa`, `nombre`, `correo`, `celular`, `direccion`, `nit`, `estado`, `fechacreacion`) VALUES
-(1, 'Sykes', 'empresa@sykes.com', 333, 'bq', 0, 0, '2023-10-19 23:00:20'),
-(2, 'Movate', 'movate@', 444, 'bq', 1234, 0, '2023-10-20 22:24:04');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ofertaslaborales`
---
-
-CREATE TABLE `ofertaslaborales` (
-  `idoferta` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `jornadalaboral` varchar(100) NOT NULL,
-  `estado` tinyint(1) NOT NULL,
-  `fechacreacion` datetime NOT NULL DEFAULT current_timestamp(),
-  `idempresa` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `ofertaslaborales`
---
-
-INSERT INTO `ofertaslaborales` (`idoferta`, `nombre`, `jornadalaboral`, `estado`, `fechacreacion`, `idempresa`) VALUES
-(1, 'programacion', 'completa', 0, '0000-00-00 00:00:00', 1),
-(10, 'contaduria', 'mediotiempo', 1, '2023-10-20 21:48:34', 1),
-(11, 'contaduria', 'mediotiempo', 1, '2023-10-20 21:49:23', 1),
-(16, 'redes', 'diurna', 1, '2023-10-20 22:02:43', 1),
-(17, 'admin', 'completa', 1, '2023-10-20 22:03:59', 1),
-(18, 'Empleado', 'Continua', 1, '2023-10-20 22:33:28', 2);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `rol`
---
-
-CREATE TABLE `rol` (
-  `idrol` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `rol`
---
-
-INSERT INTO `rol` (`idrol`, `nombre`) VALUES
-(1, '0'),
-(2, 'docente'),
-(3, 'egresado');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `rolxusuario`
---
-
-CREATE TABLE `rolxusuario` (
-  `rolxusuarioid` int(11) NOT NULL,
-  `idusuario` int(11) NOT NULL,
-  `idrol` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `rolxusuario`
---
-
-INSERT INTO `rolxusuario` (`rolxusuarioid`, `idusuario`, `idrol`) VALUES
-(2, 8, 1);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `usuarios`
---
-
-CREATE TABLE `usuarios` (
-  `idusuario` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) NOT NULL,
-  `correo` varchar(100) NOT NULL,
-  `celular` int(100) NOT NULL,
-  `direccion` varchar(100) NOT NULL,
-  `contraseña` varchar(100) NOT NULL,
-  `estado` tinyint(1) NOT NULL,
-  `fechacreacion` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `usuarios`
---
-
-INSERT INTO `usuarios` (`idusuario`, `nombre`, `apellido`, `correo`, `celular`, `direccion`, `contraseña`, `estado`, `fechacreacion`) VALUES
+INSERT INTO `users` (`userid`, `firstname`, `lastname`, `email`, `cellphone`, `address`, `password`, `status`, `creationdate`) VALUES
 (2, 'Juan', 'Evilla', 'juan.evilla', 320, 'bq', '123', 0, '2023-10-19 22:57:32'),
 (3, 'david', 'perez', 'david.perez', 320, 'bq', '123', 0, '2023-10-19 22:57:32'),
 (4, 'pepe', 'pepe', 'pepe', 320, 'bq', '123', 0, '2023-10-19 22:57:32'),
@@ -208,190 +61,250 @@ INSERT INTO `usuarios` (`idusuario`, `nombre`, `apellido`, `correo`, `celular`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuarioxcarrera`
+-- Table structure for table `company`
 --
 
-CREATE TABLE `usuarioxcarrera` (
-  `idusuariocarrera` int(11) NOT NULL,
-  `idusuario` int(11) NOT NULL,
-  `idcarrera` int(11) NOT NULL
+CREATE TABLE `company` (
+  `companyid` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `cellphone` int(11) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `nit` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `creationdate` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Indexes for dumped tables
---
+ALTER TABLE `company`
+  ADD PRIMARY KEY (`companyid`);
+
+ALTER TABLE `company`
+  MODIFY `companyid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- Indexes for table `aplicantes`
---
-ALTER TABLE `aplicantes`
-  ADD PRIMARY KEY (`idaplicante`),
-  ADD KEY `idoferta` (`idoferta`),
-  ADD KEY `idusuario` (`idusuario`);
-
---
--- Indexes for table `atributos`
---
-ALTER TABLE `atributos`
-  ADD PRIMARY KEY (`idatributo`);
-
---
--- Indexes for table `atributosxusuario`
---
-ALTER TABLE `atributosxusuario`
-  ADD PRIMARY KEY (`idatributosxusuario`),
-  ADD KEY `idatributos` (`idatributos`,`idusuario`),
-  ADD KEY `idusuario` (`idusuario`);
-
---
--- Indexes for table `carrera`
---
-ALTER TABLE `carrera`
-  ADD PRIMARY KEY (`idcarrera`);
-
---
--- Indexes for table `empresa`
---
-ALTER TABLE `empresa`
-  ADD PRIMARY KEY (`idempresa`);
-
---
--- Indexes for table `ofertaslaborales`
---
-ALTER TABLE `ofertaslaborales`
-  ADD PRIMARY KEY (`idoferta`),
-  ADD KEY `idempresa` (`idempresa`);
-
---
--- Indexes for table `rol`
---
-ALTER TABLE `rol`
-  ADD PRIMARY KEY (`idrol`);
-
---
--- Indexes for table `rolxusuario`
---
-ALTER TABLE `rolxusuario`
-  ADD PRIMARY KEY (`rolxusuarioid`),
-  ADD KEY `usuarioid` (`idusuario`),
-  ADD KEY `rolid` (`idrol`);
-
---
--- Indexes for table `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`idusuario`),
-  ADD UNIQUE KEY `correo` (`correo`);
-
---
--- Indexes for table `usuarioxcarrera`
---
-ALTER TABLE `usuarioxcarrera`
-  ADD PRIMARY KEY (`idusuariocarrera`),
-  ADD KEY `idusuario` (`idusuario`),
-  ADD KEY `idcarrera` (`idcarrera`);
-
---
--- AUTO_INCREMENT for dumped tables
+-- Dumping data for table `company`
 --
 
---
--- AUTO_INCREMENT for table `aplicantes`
---
-ALTER TABLE `aplicantes`
-  MODIFY `idaplicante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+INSERT INTO `company` (`companyid`, `name`, `email`, `cellphone`, `address`, `nit`, `status`, `creationdate`) VALUES
+(1, 'Sykes', 'company@sykes.com', 333, 'bq', 0, 0, '2023-10-19 23:00:20'),
+(2, 'Movate', 'movate@', 444, 'bq', 1234, 0, '2023-10-20 22:24:04');
+
+-- --------------------------------------------------------
 
 --
--- AUTO_INCREMENT for table `atributos`
---
-ALTER TABLE `atributos`
-  MODIFY `idatributo` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `atributosxusuario`
---
-ALTER TABLE `atributosxusuario`
-  MODIFY `idatributosxusuario` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `carrera`
---
-ALTER TABLE `carrera`
-  MODIFY `idcarrera` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `empresa`
---
-ALTER TABLE `empresa`
-  MODIFY `idempresa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `ofertaslaborales`
---
-ALTER TABLE `ofertaslaborales`
-  MODIFY `idoferta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
-
---
--- AUTO_INCREMENT for table `rol`
---
-ALTER TABLE `rol`
-  MODIFY `idrol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `rolxusuario`
---
-ALTER TABLE `rolxusuario`
-  MODIFY `rolxusuarioid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `usuarios`
---
-ALTER TABLE `usuarios`
-  MODIFY `idusuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- AUTO_INCREMENT for table `usuarioxcarrera`
---
-ALTER TABLE `usuarioxcarrera`
-  MODIFY `idusuariocarrera` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Constraints for dumped tables
+-- Table structure for table `joboffers`
 --
 
---
--- Constraints for table `aplicantes`
---
-ALTER TABLE `aplicantes`
-  ADD CONSTRAINT `aplicantes_ibfk_1` FOREIGN KEY (`idusuario`) REFERENCES `usuarios` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `aplicantes_ibfk_2` FOREIGN KEY (`idoferta`) REFERENCES `ofertaslaborales` (`idoferta`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+CREATE TABLE `joboffers` (
+  `offerid` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `workday` varchar(100) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `creationdate` datetime NOT NULL DEFAULT current_timestamp(),
+  `companyid` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `joboffers`
+  ADD PRIMARY KEY (`offerid`),
+  ADD KEY `companyid` (`companyid`);
+
+ALTER TABLE `joboffers`
+  MODIFY `offerid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+ALTER TABLE `joboffers`
+  ADD CONSTRAINT `joboffers_ibfk_1` FOREIGN KEY (`companyid`) REFERENCES `company` (`companyid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Constraints for table `atributosxusuario`
+-- Dumping data for table `joboffers`
 --
-ALTER TABLE `atributosxusuario`
-  ADD CONSTRAINT `atributosxusuario_ibfk_1` FOREIGN KEY (`idusuario`) REFERENCES `usuarios` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `atributosxusuario_ibfk_2` FOREIGN KEY (`idatributos`) REFERENCES `atributos` (`idatributo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+INSERT INTO `joboffers` (`offerid`, `name`, `workday`, `status`, `creationdate`, `companyid`) VALUES
+(1, 'programming', 'fulltime', 0, '0000-00-00 00:00:00', 1),
+(10, 'accounting', 'parttime', 1, '2023-10-20 21:48:34', 1),
+(11, 'accounting', 'parttime', 1, '2023-10-20 21:49:23', 1),
+(16, 'networks', 'daytime', 1, '2023-10-20 22:02:43', 1),
+(17, 'admin', 'fulltime', 1, '2023-10-20 22:03:59', 1),
+(18, 'Employee', 'Continuous', 1, '2023-10-20 22:33:28', 2);
+
+-- --------------------------------------------------------
 
 --
--- Constraints for table `ofertaslaborales`
+-- Table structure for table `applicants`
 --
-ALTER TABLE `ofertaslaborales`
-  ADD CONSTRAINT `ofertaslaborales_ibfk_1` FOREIGN KEY (`idempresa`) REFERENCES `empresa` (`idempresa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE TABLE `applicants` (
+  `applicantid` int(11) NOT NULL,
+  `offerid` int(11) NOT NULL,
+  `userid` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `applicants`
+  ADD PRIMARY KEY (`applicantid`),
+  ADD KEY `offerid` (`offerid`),
+  ADD KEY `userid` (`userid`);
+
+ALTER TABLE `applicants`
+  MODIFY `applicantid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+ALTER TABLE `applicants`
+  ADD CONSTRAINT `applicants_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `applicants_ibfk_2` FOREIGN KEY (`offerid`) REFERENCES `joboffers` (`offerid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Constraints for table `rolxusuario`
+-- Dumping data for table `applicants`
 --
-ALTER TABLE `rolxusuario`
-  ADD CONSTRAINT `rolxusuario_ibfk_1` FOREIGN KEY (`idusuario`) REFERENCES `usuarios` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `rolxusuario_ibfk_2` FOREIGN KEY (`idrol`) REFERENCES `rol` (`idrol`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+INSERT INTO `applicants` (`applicantid`, `offerid`, `userid`) VALUES
+(1, 1, 2),
+(2, 1, 3);
+
+-- --------------------------------------------------------
 
 --
--- Constraints for table `usuarioxcarrera`
+-- Table structure for table `attributes`
 --
-ALTER TABLE `usuarioxcarrera`
-  ADD CONSTRAINT `usuarioxcarrera_ibfk_1` FOREIGN KEY (`idusuario`) REFERENCES `usuarios` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `usuarioxcarrera_ibfk_2` FOREIGN KEY (`idcarrera`) REFERENCES `carrera` (`idcarrera`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE TABLE `attributes` (
+  `attributeid` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `attributes`
+  ADD PRIMARY KEY (`attributeid`);
+
+ALTER TABLE `attributes`
+  MODIFY `attributeid` int(11) NOT NULL AUTO_INCREMENT;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `attributesxuser`
+--
+
+CREATE TABLE `attributesxuser` (
+  `attributesxuserid` int(11) NOT NULL,
+  `attributeid` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  `field` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `attributesxuser`
+  ADD PRIMARY KEY (`attributesxuserid`),
+  ADD KEY `attributeid` (`attributeid`,`userid`),
+  ADD KEY `userid` (`userid`);
+
+ALTER TABLE `attributesxuser`
+  MODIFY `attributesxuserid` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `attributesxuser`
+  ADD CONSTRAINT `attributesxuser_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `attributesxuser_ibfk_2` FOREIGN KEY (`attributeid`) REFERENCES `attributes` (`attributeid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `career`
+--
+
+CREATE TABLE `career` (
+  `careerid` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `career`
+  ADD PRIMARY KEY (`careerid`);
+
+ALTER TABLE `career`
+  MODIFY `careerid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- Dumping data for table `career`
+--
+
+INSERT INTO `career` (`careerid`, `name`) VALUES
+(1, 'Ing Sistemas');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `role`
+--
+
+CREATE TABLE `role` (
+  `roleid` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `role`
+  ADD PRIMARY KEY (`roleid`);
+
+ALTER TABLE `role`
+  MODIFY `roleid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Dumping data for table `role`
+--
+
+INSERT INTO `role` (`roleid`, `name`) VALUES
+(1, '0'),
+(2, 'teacher'),
+(3, 'graduate');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rolexuser`
+--
+
+CREATE TABLE `rolexuser` (
+  `rolexuserid` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  `roleid` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `rolexuser`
+  ADD PRIMARY KEY (`rolexuserid`),
+  ADD KEY `userid` (`userid`),
+  ADD KEY `roleid` (`roleid`);
+
+ALTER TABLE `rolexuser`
+  MODIFY `rolexuserid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+ALTER TABLE `rolexuser`
+  ADD CONSTRAINT `rolexuser_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `rolexuser_ibfk_2` FOREIGN KEY (`roleid`) REFERENCES `role` (`roleid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Dumping data for table `rolexuser`
+--
+
+INSERT INTO `rolexuser` (`rolexuserid`, `userid`, `roleid`) VALUES
+(2, 8, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `userxcareer`
+--
+
+CREATE TABLE `userxcareer` (
+  `usercareerid` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  `careerid` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `userxcareer`
+  ADD PRIMARY KEY (`usercareerid`),
+  ADD KEY `userid` (`userid`),
+  ADD KEY `careerid` (`careerid`);
+
+ALTER TABLE `userxcareer`
+  MODIFY `usercareerid` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `userxcareer`
+  ADD CONSTRAINT `userxcareer_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `userxcareer_ibfk_2` FOREIGN KEY (`careerid`) REFERENCES `career` (`careerid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

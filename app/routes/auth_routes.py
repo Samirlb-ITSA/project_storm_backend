@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from controllers.aplicante_controller import *
+from controllers.applicant_controller import *
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from models.user_model import User
 from routes.user_routes import UserController
@@ -27,18 +27,18 @@ async def authenticate(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(users, form_data.username, form_data.password)
     access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     access_token = create_access_token(
-        data={"sub": user.correo}, expires_delta=access_token_expires
+        data={"sub": user.email}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 def get_user(db, username):
-    return next((user for user in db if user.correo == username), [])
+    return next((user for user in db if user.email == username), [])
 
 def authenticate_user(db, username, password):
     user = get_user(db, username)
     if not user:
         raise HTTPException(status_code = 401, detail= "Could not validate credentials", headers={"WWW-Autenticate": "Bearer"})
-    if not verify_password(password, user.contraseña):
+    if not verify_password(password, user.password):
         raise HTTPException(status_code = 401, detail ="Could not validate credentials", headers={"WWW-Autenticate": "Bearer"})
     return user
     
@@ -73,6 +73,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if current_user.estado == 0 :
+    if current_user.status == 0 :
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user

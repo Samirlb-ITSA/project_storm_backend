@@ -7,32 +7,32 @@ from routes.auth_routes import get_current_active_user
 
 router = APIRouter()
 
-nuevo_usuario = UserController()
+new_user = UserController()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
 @router.post("/create_user")
 async def create_user(user: UserIn):
-    rpta = nuevo_usuario.create_user(user)
-    return rpta
+    response = new_user.create_user(user)
+    return response
 
 
 @router.get("/get_user/{user_id}",response_model=UserIn)
 async def get_user(user_id: int, user: UserIn = Depends(get_current_active_user)):
-    rpta = nuevo_usuario.get_user(user_id)
-    return rpta
+    response = new_user.get_user(user_id)
+    return response
 
 @router.get("/get_users/")
 async def get_users():
-    rpta = nuevo_usuario.get_users()
-    return rpta
+    response = new_user.get_users()
+    return response
 
 @router.put("/update_user")
 async def update_user(user: UserIn):
-    rpta = nuevo_usuario.update_user(user)
-    return rpta
+    response = new_user.update_user(user)
+    return response
 
 @router.delete("/delete_user/{user_id}")
 async def delete_user(user_id: int):
-    rpta = nuevo_usuario.delete_user(user_id)
-    return rpta
+    response = new_user.delete_user(user_id)
+    return response

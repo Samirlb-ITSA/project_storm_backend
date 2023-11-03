@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from routes.user_routes import router as user_router
-from routes.rol_routes import router as rol_router
-from routes.empresa_routes import router as empresa_router
-from routes.carrera_routes import router as carrera_router
-from routes.ofertas_routes import router as ofertas_router
-from routes.aplicante_routes import router as aplicante_router
+from routes.role_routes import router as rol_router
+from routes.company_routes import router as empresa_router
+from routes.career_routes import router as carrera_router
+from routes.job_offer_routes import router as ofertas_router
+from routes.applicant_routes import router as aplicante_router
 from routes.auth_routes import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 

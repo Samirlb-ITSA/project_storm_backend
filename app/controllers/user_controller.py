@@ -2,9 +2,9 @@ import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
 from models.user_model import UserIn, User
-from models.rol_model import Rol
-from models.carrera_model import Carrera
-from models.atributo_model import Atributo
+from models.role_model import Role
+from models.career_model import Career
+from models.attribute_model import Attribute
 
 from models.login_model import Login
 from fastapi.encoders import jsonable_encoder
@@ -24,19 +24,19 @@ class UserController:
             db.commit()
 
             for role_id in user.role_ids:
-                role = db.query(Rol).get(role_id)
+                role = db.query(Role).get(role_id)
                 if role is not None:
                     db_user.roles.append(role)
 
-            for carrera_id in user.carrera_ids:
-                carrera = db.query(Carrera).get(carrera_id)
-                if carrera is not None:
-                    db_user.carreras.append(carrera)
+            for career_id in user.career_ids:
+                career = db.query(Career).get(career_id)
+                if career is not None:
+                    db_user.careers.append(career)
 
-            for atributo_id in user.atributo_ids:
-                atributo = db.query(Atributo).get(atributo_id)
-                if atributo is not None:
-                    db_user.atributos.append(atributo)
+            for attribute_id in user.attribute_ids:
+                attribute = db.query(Attribute).get(attribute_id)
+                if attribute is not None:
+                    db_user.attributes.append(attribute)
 
             db.commit()
 
@@ -50,9 +50,9 @@ class UserController:
     def get_user(user_id: int):
         db = get_db_connection()
         try:
-            user = db.query(User).options(joinedload(User.roles), joinedload(User.carreras), joinedload(User.atributos), joinedload(User.aplicantes)).filter(User.idusuario == user_id).first()
+            user = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes), joinedload(User.applicants)).filter(User.userid == user_id).first()
             if user is None:
-                raise HTTPException(status_code=404, detail="User not found")
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
             return jsonable_encoder(user)
         finally:
             db.close()
@@ -60,9 +60,9 @@ class UserController:
     def get_users():
         db = get_db_connection()
         try:
-            users = db.query(User).options(joinedload(User.roles), joinedload(User.carreras), joinedload(User.atributos), joinedload(User.aplicantes)).all()
+            users = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes), joinedload(User.applicants)).all()
             if not users:
-                raise HTTPException(status_code=404, detail="No users found")
+                raise HTTPException(status_code=404, detail="No se encontraron usuarios")
             return {"resultado": jsonable_encoder(users)}
         finally:
             db.close()
@@ -70,7 +70,7 @@ class UserController:
     def getUsersFromDb(self):
         db = get_db_connection()
         try:
-            users = db.query(User).options(joinedload(User.roles), joinedload(User.carreras), joinedload(User.atributos), joinedload(User.aplicantes)).all()
+            users = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes), joinedload(User.applicants)).all()
             return users
         finally:
             db.close()
@@ -78,31 +78,31 @@ class UserController:
     def update_user(user: UserIn):
         db = get_db_connection()
         try:
-            db_user = db.query(User).filter(User.idusuario == user.idusuario).first()
+            db_user = db.query(User).filter(User.userid == user.userid).first()
             if db_user is None:
-                raise HTTPException(status_code=404, detail="User not found")
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
             for var, value in vars(user).items():
                 setattr(db_user, var, value) if value else None
             db.commit()
-            return {"resultado": "User actualizado"}
+            return {"resultado": "Usuario actualizado"}
         except SQLAlchemyError:
             db.rollback()
-            return {"resultado": "Error al actualizar el user"}
+            return {"resultado": "Error al actualizar el usuario"}
         finally:
             db.close()
 
     def delete_user(user_id: int):
         db = get_db_connection()
         try:
-            db_user = db.query(User).filter(User.idusuario == user_id).first()
+            db_user = db.query(User).filter(User.userid == user_id).first()
             if db_user is None:
-                raise HTTPException(status_code=404, detail="User not found")
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
             db.delete(db_user)
             db.commit()
-            return {"resultado": "User eliminado"}
+            return {"resultado": "Usuario eliminado"}
         except SQLAlchemyError:
             db.rollback()
-            return {"resultado": "Error al eliminar el user"}
+            return {"resultado": "Error al eliminar el usuario"}
         finally:
             db.close()
 

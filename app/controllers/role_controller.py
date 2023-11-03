@@ -1,16 +1,17 @@
 import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.rol_model import Rol, RolIn
+from models.role_model import Role, RoleIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
-class RolController:
-    def create_rol(rol: RolIn):
+
+class RoleController:
+    def create_role(role: RoleIn):
         db = get_db_connection()
         try:
-            db_rol = Rol(rol.model_dump())
-            db.add(db_rol)
+            db_role = Role(role.model_dump())
+            db.add(db_role)
             db.commit()
             return {"resultado": "Rol creado"}
         except SQLAlchemyError:
@@ -19,34 +20,34 @@ class RolController:
         finally:
             db.close()
 
-    def get_rol(rol_id: int):
+    def get_role(role_id: int):
         db = get_db_connection()
         try:
-            rol = db.query(Rol).options(joinedload(Rol.users)).filter(Rol.idrol == rol_id).first()
-            if rol is None:
-                raise HTTPException(status_code=404, detail="Rol not found")
-            return jsonable_encoder(rol)
+            role = db.query(Role).options(joinedload(Role.users)).filter(Role.roleid == role_id).first()
+            if role is None:
+                raise HTTPException(status_code=404, detail="Rol no encontrado")
+            return jsonable_encoder(role)
         finally:
             db.close()
 
     def get_roles():
         db = get_db_connection()
         try:
-            roles = db.query(Rol).options(joinedload(Rol.users)).all()
+            roles = db.query(Role).options(joinedload(Role.users)).all()
             if not roles:
-                raise HTTPException(status_code=404, detail="No roles found")
+                raise HTTPException(status_code=404, detail="No se encontraron roles")
             return {"resultado": jsonable_encoder(roles)}
         finally:
             db.close()
 
-    def update_rol(rol: RolIn):
+    def update_role(role: RoleIn):
         db = get_db_connection()
         try:
-            db_rol = db.query(Rol).filter(Rol.idrol == rol.idrol).first()
-            if db_rol is None:
-                raise HTTPException(status_code=404, detail="Rol not found")
-            for var, value in vars(rol).items():
-                setattr(db_rol, var, value) if value else None
+            db_role = db.query(Role).filter(Role.roleid == role.roleid).first()
+            if db_role is None:
+                raise HTTPException(status_code=404, detail="Rol no encontrado")
+            for var, value in vars(role).items():
+                setattr(db_role, var, value) if value else None
             db.commit()
             return {"resultado": "Rol actualizado"}
         except SQLAlchemyError:
@@ -55,13 +56,13 @@ class RolController:
         finally:
             db.close()
 
-    def delete_rol(rol_id: int):
+    def delete_role(role_id: int):
         db = get_db_connection()
         try:
-            db_rol = db.query(Rol).filter(Rol.idrol == rol_id).first()
-            if db_rol is None:
-                raise HTTPException(status_code=404, detail="Rol not found")
-            db.delete(db_rol)
+            db_role = db.query(Role).filter(Role.roleid == role_id).first()
+            if db_role is None:
+                raise HTTPException(status_code=404, detail="Rol no encontrado")
+            db.delete(db_role)
             db.commit()
             return {"resultado": "Rol eliminado"}
         except SQLAlchemyError:
@@ -70,4 +71,4 @@ class RolController:
         finally:
             db.close()
 
-##user_controller = UserController()
+##role_controller = RoleController()

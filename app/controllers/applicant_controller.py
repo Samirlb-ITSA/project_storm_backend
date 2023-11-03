@@ -1,16 +1,17 @@
 import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.aplicante_model import Aplicante, AplicanteIn
+from models.applicant_model import Applicant, ApplicantIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import joinedload
 
-class AplicanteController:
-    def create_aplicante(aplicante: AplicanteIn):
+class ApplicantController:
+    def create_applicant(applicant: ApplicantIn):
         db = get_db_connection()
         try:
-            db_aplicante = Aplicante(aplicante.model_dump())
-            db.add(db_aplicante)
+            db_applicant = Applicant(applicant.model_dump())
+            db.add(db_applicant)
             db.commit()
             return {"resultado": "Aplicante creado"}
         except SQLAlchemyError:
@@ -19,34 +20,34 @@ class AplicanteController:
         finally:
             db.close()
 
-    def get_aplicante(aplicante_id: int):
+    def get_applicant(applicant_id: int):
         db = get_db_connection()
         try:
-            aplicante = db.query(Aplicante).options(joinedload(Aplicante.user)).filter(Aplicante.idaplicante == aplicante_id).first()
-            if aplicante is None:
+            applicant = db.query(Applicant).options(joinedload(Applicant.user)).filter(Applicant.applicantid == applicant_id).first()
+            if applicant is None:
                 raise HTTPException(status_code=404, detail="Aplicante not found")
-            return jsonable_encoder(aplicante)
+            return jsonable_encoder(applicant)
         finally:
             db.close()
 
-    def get_aplicantes():
+    def get_applicants():
         db = get_db_connection()
         try:
-            aplicantes = db.query(Aplicante).options(joinedload(Aplicante.user)).all()
-            if not aplicantes:
+            applicants = db.query(Applicant).options(joinedload(Applicant.user)).all()
+            if not applicants:
                 raise HTTPException(status_code=404, detail="No aplicantes found")
-            return {"resultado": jsonable_encoder(aplicantes)}
+            return {"resultado": jsonable_encoder(applicants)}
         finally:
             db.close()
 
-    def update_aplicante(aplicante: AplicanteIn):
+    def update_applicant(applicant: ApplicantIn):
         db = get_db_connection()
         try:
-            db_aplicante = db.query(Aplicante).filter(Aplicante.idaplicante == aplicante.idaplicante).first()
-            if db_aplicante is None:
+            db_applicant = db.query(Applicant).filter(Applicant.applicantid == applicant.applicantid).first()
+            if db_applicant is None:
                 raise HTTPException(status_code=404, detail="Aplicante not found")
-            for var, value in vars(aplicante).items():
-                setattr(db_aplicante, var, value) if value else None
+            for var, value in vars(applicant).items():
+                setattr(db_applicant, var, value) if value else None
             db.commit()
             return {"resultado": "Aplicante actualizado"}
         except SQLAlchemyError:
@@ -55,13 +56,13 @@ class AplicanteController:
         finally:
             db.close()
 
-    def delete_aplicante(aplicante_id: int):
+    def delete_applicant(applicant_id: int):
         db = get_db_connection()
         try:
-            db_aplicante = db.query(Aplicante).filter(Aplicante.idaplicante == aplicante_id).first()
-            if db_aplicante is None:
+            db_applicant = db.query(Applicant).filter(Applicant.applicantid == applicant_id).first()
+            if db_applicant is None:
                 raise HTTPException(status_code=404, detail="Aplicante not found")
-            db.delete(db_aplicante)
+            db.delete(db_applicant)
             db.commit()
             return {"resultado": "Aplicante eliminada"}
         except SQLAlchemyError:
@@ -70,4 +71,4 @@ class AplicanteController:
         finally:
             db.close()
 
-##aplicante_controller = AplicanteController()
+##applicant_controller = ApplicantController()

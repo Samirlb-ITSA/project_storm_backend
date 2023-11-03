@@ -3,61 +3,61 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from typing import List
-from models.rol_model import Rol, RolIn
+from models.role_model import Role, RoleIn
 
 Base = declarative_base()
 
-# Define la tabla de asociación para User y Rol
-rolxusuario = Table('rolxusuario', Base.metadata,
-    Column('idusuario', Integer, ForeignKey('usuarios.idusuario')),
-    Column('idrol', Integer, ForeignKey('rol.idrol'))
+# Define the association table for User and Role
+rolexuser = Table('rolexuser', Base.metadata,
+    Column('userid', Integer, ForeignKey('users.userid')),
+    Column('roleid', Integer, ForeignKey('role.roleid'))
 )
 
-# Define la tabla de asociación para User y Carrera
-usuarioxcarrera = Table('usuarioxcarrera', Base.metadata,
-    Column('idusuario', Integer, ForeignKey('usuarios.idusuario')),
-    Column('idcarrera', Integer, ForeignKey('carrera.idcarrera'))
+# Define the association table for User and Career
+userxcareer = Table('userxcareer', Base.metadata,
+    Column('userid', Integer, ForeignKey('users.userid')),
+    Column('careerid', Integer, ForeignKey('career.careerid'))
 )
 
-# Define la tabla de asociación para User y Atributo
-atributosxusuario = Table('atributosxusuario', Base.metadata,
-    Column('idusuario', Integer, ForeignKey('usuarios.idusuario')),
-    Column('idatributo', Integer, ForeignKey('atributos.idatributo'))
+# Define the association table for User and Attribute
+attributesxuser = Table('attributesxuser', Base.metadata,
+    Column('userid', Integer, ForeignKey('users.userid')),
+    Column('attributeid', Integer, ForeignKey('attributes.attributeid'))
 )
 
 class User(Base):
-    __tablename__ = "usuarios"
+    __tablename__ = "users"
 
-    idusuario = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String)
-    apellido = Column(String)
-    correo = Column(String)
-    celular = Column(Integer)
-    direccion = Column(String)
-    contraseña = Column(String)
-    estado = Column(Integer)
-    fechacreacion = Column(DateTime)
+    userid = Column(Integer, primary_key=True, index=True)
+    firstname = Column(String)
+    lastname = Column(String)
+    email = Column(String)
+    cellphone = Column(Integer)
+    address = Column(String)
+    password = Column(String)
+    status = Column(Integer)
+    creationdate = Column(DateTime)
 
-    # Define la relación con Rol
-    roles = relationship("Rol", secondary=rolxusuario, back_populates="usuarios")
+    # Define the relationship with Role
+    roles = relationship("Role", secondary=rolexuser, back_populates="users")
+    
+    # Define the relationship with Career
+    careers = relationship("Career", secondary=userxcareer, back_populates="users")
 
-    # Define la relación con Carrera
-    carreras = relationship("Carrera", secondary=usuarioxcarrera, back_populates="usuarios")
+    # Define the relationship with Attribute
+    attributes = relationship("Attribute", secondary=attributesxuser, back_populates="users")
 
-    # Define la relación con Atributo
-    atributos = relationship("Atributo", secondary=atributosxusuario, back_populates="usuarios")
-
-    # Define la relación con Aplicante
-    aplicantes = relationship("Aplicante", back_populates="usuarios")
+    # Define the relationship with Applicant
+    applicants = relationship("Applicant", back_populates="users")
 
 class UserIn(BaseModel):
-    nombre: str
-    apellido: str
-    correo: str
-    celular: int
-    direccion: str
-    contraseña: str
-    estado: int
+    firstname: str
+    lastname: str
+    email: str
+    cellphone: int
+    address: str
+    password: str
+    status: int
     role_ids: List[int] = []
-    carrera_ids: List[int] = []
-    atributo_ids: List[int] = []
+    career_ids: List[int] = []
+    attribute_ids: List[int] = []
