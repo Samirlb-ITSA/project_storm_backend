@@ -1,104 +1,74 @@
 import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.rol_model import Rol
+from models.rol_model import Rol, RolIn
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.exc import SQLAlchemyError
+from pydantic.main import model_dump
 
 class RolController:
-        
-    def create_rol(self, rol: Rol):   
+    def create_rol(rol: RolIn):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO `rol`(`idrol`, `nombre`) VALUES (%s, %s)", (rol.nombre))
-            conn.commit()
-            conn.close()
+            db_rol = Rol(**model_dump(rol))
+            db.add(db_rol)
+            db.commit()
             return {"resultado": "Rol creado"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al crear el rol"}
         finally:
-            conn.close()
-        
-    def get_rol(self, rol_id: int):
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM rol WHERE idrol = %s", (rol_id,))
-            result = cursor.fetchone()
-            payload = []
-            content = {} 
-            
-            content={
-                    'idrol':int(result[0]),
-                    'nombre':result[1]
-            }
-            payload.append(content)
-            
-            json_data = jsonable_encoder(content)            
-            if result:
-               return  json_data
-            else:
-                raise HTTPException(status_code=404, detail="Rol not found")  
-                
-        except mysql.connector.Error as err:
-            conn.rollback()
-        finally:
-            conn.close()
-       
-    def get_rols(self):
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM rol")
-            result = cursor.fetchall()
-            payload = []
-            content = {} 
-            for data in result:
-                content={
-                    'idrol':data[0],
-                    'nombre':data[1],
+            db.close()
 
-                }
-                payload.append(content)
-                content = {}
-            json_data = jsonable_encoder(payload)        
-            if result:
-               return {"resultado": json_data}
-            else:
-                raise HTTPException(status_code=404, detail="Rol not found")  
-                
-        except mysql.connector.Error as err:
-            conn.rollback()
-        finally:
-            conn.close()
-    
-    def update_rol(self, rol: Rol):
+    def get_rol(rol_id: int):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("UPDATE rol SET idrol = %s, nombre = %s WHERE idrol = %s", (rol.idrol,rol.nombre,rol.idrol,))
-            conn.commit()
-            conn.close()
-            return {"resultado": "Rol actualizad"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+            rol = db.query(Rol).filter(Rol.idrol == rol_id).first()
+            if rol is None:
+                raise HTTPException(status_code=404, detail="Rol not found")
+            return jsonable_encoder(rol)
         finally:
-            conn.close()
+            db.close()
 
-    def delete_rol(self, rol_id: int):
+    def get_roles():
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM rol WHERE idrol = %s", (rol_id,))
-            conn.commit()
-            conn.close()
+            roles = db.query(Rol).all()
+            if not roles:
+                raise HTTPException(status_code=404, detail="No roles found")
+            return {"resultado": jsonable_encoder(roles)}
+        finally:
+            db.close()
+
+    def update_rol(rol: RolIn):
+        db = get_db_connection()
+        try:
+            db_rol = db.query(Rol).filter(Rol.idrol == rol.idrol).first()
+            if db_rol is None:
+                raise HTTPException(status_code=404, detail="Rol not found")
+            for var, value in vars(rol).items():
+                setattr(db_rol, var, value) if value else None
+            db.commit()
+            return {"resultado": "Rol actualizado"}
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al actualizar el rol"}
+        finally:
+            db.close()
+
+    def delete_rol(rol_id: int):
+        db = get_db_connection()
+        try:
+            db_rol = db.query(Rol).filter(Rol.idrol == rol_id).first()
+            if db_rol is None:
+                raise HTTPException(status_code=404, detail="Rol not found")
+            db.delete(db_rol)
+            db.commit()
             return {"resultado": "Rol eliminado"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al eliminar el rol"}
         finally:
-            conn.close()
-
-    
-       
+            db.close()
 
 ##user_controller = UserController()

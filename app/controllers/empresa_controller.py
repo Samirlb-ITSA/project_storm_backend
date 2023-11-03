@@ -1,118 +1,74 @@
 import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.empresa_model import Empresa
+from models.empresa_model import Empresa, EmpresaIn
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.exc import SQLAlchemyError
+from pydantic.main import model_dump
 
 class EmpresaController:
-        
-    def create_empresa(self, empresa: Empresa):   
+    def create_empresa(empresa: EmpresaIn):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO `empresa`(`nombre`, `correo`, `celular`, `direccion`, `nit`) VALUES (%s, %s, %s, %s, %s)", (empresa.nombre, empresa.correo, empresa.celular, empresa.direccion,  empresa.nit))
-            conn.commit()
-            conn.close()
-            return {"resultado": "Empresa creado"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+            db_empresa = Empresa(**model_dump(empresa))
+            db.add(db_empresa)
+            db.commit()
+            return {"resultado": "Empresa creada"}
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al crear la empresa"}
         finally:
-            conn.close()
-        
+            db.close()
 
-    def get_empresa(self, empresa_id: int):
+    def get_empresa(empresa_id: int):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM empresa WHERE idempresa = %s", (empresa_id,))
-            result = cursor.fetchone()
-            payload = []
-            content = {} 
-            
-            content={
-                    'idempresa':int(result[0]),
-                    'nombre':result[1],
-                    'correo':result[2],
-                    'celular':int(result[3]),
-                    'direccion':result[4],
-                    'nit':int(result[5])
-            }
-            payload.append(content)
-            
-            json_data = jsonable_encoder(content)            
-            if result:
-               return  json_data
-            else:
-                raise HTTPException(status_code=404, detail="Empresa not found")  
-                
-        except mysql.connector.Error as err:
-            conn.rollback()
+            empresa = db.query(Empresa).filter(Empresa.idempresa == empresa_id).first()
+            if empresa is None:
+                raise HTTPException(status_code=404, detail="Empresa not found")
+            return jsonable_encoder(empresa)
         finally:
-            conn.close()
-       
-    def get_empresas(self):
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM empresa")
-            result = cursor.fetchall()
-            payload = []
-            content = {} 
-            for data in result:
-                content={
-                    'idempresa':data[0],
-                    'nombre':data[1],
-                    'correo':data[2],
-                    'celular':data[3],
-                    'direccion':data[4],
-                    'nit':data[5]
-                }
-                payload.append(content)
-                content = {}
-            json_data = jsonable_encoder(payload)        
-            if result:
-               return {"resultado": json_data}
-            else:
-                raise HTTPException(status_code=404, detail="Empresa not found")  
-                
-        except mysql.connector.Error as err:
-            conn.rollback()
-        finally:
-            conn.close()
+            db.close()
 
-    def update_empresa(self, empresa: Empresa):
+    def get_empresas():
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""UPDATE empresa 
-                           SET idempresa = %s,
-                           nombre = %s,
-                           correo = %s,
-                           celular = %s,
-                           direccion = %s,
-                           nit = %s
-                           WHERE idempresa = %s""", (empresa.idempresa,
-                           empresa.nombre,empresa.correo,empresa.celular,
-                           empresa.direccion,empresa.nit,empresa.idempresa,))
-            conn.commit()
-            conn.close()
+            empresas = db.query(Empresa).all()
+            if not empresas:
+                raise HTTPException(status_code=404, detail="No empresas found")
+            return {"resultado": jsonable_encoder(empresas)}
+        finally:
+            db.close()
+
+    def update_empresa(empresa: EmpresaIn):
+        db = get_db_connection()
+        try:
+            db_empresa = db.query(Empresa).filter(Empresa.idempresa == empresa.idempresa).first()
+            if db_empresa is None:
+                raise HTTPException(status_code=404, detail="Empresa not found")
+            for var, value in vars(empresa).items():
+                setattr(db_empresa, var, value) if value else None
+            db.commit()
             return {"resultado": "Empresa actualizada"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al actualizar la empresa"}
         finally:
-            conn.close()
+            db.close()
 
-    def delete_empresa(self, empresa_id: int):
+    def delete_empresa(empresa_id: int):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM empresa WHERE idempresa = %s", (empresa_id,))
-            conn.commit()
-            conn.close()
+            db_empresa = db.query(Empresa).filter(Empresa.idempresa == empresa_id).first()
+            if db_empresa is None:
+                raise HTTPException(status_code=404, detail="Empresa not found")
+            db.delete(db_empresa)
+            db.commit()
             return {"resultado": "Empresa eliminada"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al eliminar la empresa"}
         finally:
-            conn.close()
+            db.close()
 
 ##empresa_controller = EmpresaController()

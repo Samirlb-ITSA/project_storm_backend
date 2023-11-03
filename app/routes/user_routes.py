@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
 from controllers.user_controller import *
-from models.user_model import User
+from models.user_model import UserIn
 from models.login_model import Login
 from routes.auth_routes import get_current_active_user
 
@@ -12,13 +12,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
 @router.post("/create_user")
-async def create_user(user: User):
+async def create_user(user: UserIn):
     rpta = nuevo_usuario.create_user(user)
     return rpta
 
 
-@router.get("/get_user/{user_id}",response_model=User)
-async def get_user(user_id: int, user: User = Depends(get_current_active_user)):
+@router.get("/get_user/{user_id}",response_model=UserIn)
+async def get_user(user_id: int, user: UserIn = Depends(get_current_active_user)):
     rpta = nuevo_usuario.get_user(user_id)
     return rpta
 
@@ -28,7 +28,7 @@ async def get_users():
     return rpta
 
 @router.put("/update_user")
-async def update_user(user: User):
+async def update_user(user: UserIn):
     rpta = nuevo_usuario.update_user(user)
     return rpta
 

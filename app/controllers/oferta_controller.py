@@ -1,117 +1,72 @@
 import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.oferta_model import Oferta
-from fastapi.encoders import jsonable_encoder
+from models.oferta_model import Oferta, OfertaIn
+from fastapi.encoders import jsonable_encode
+from sqlalchemy.exc import SQLAlchemyError
+from pydantic.main import model_dump
 
 class OfertaController:
-        
-    def create_oferta(self, oferta: Oferta):   
+    def create_oferta(oferta: OfertaIn):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO `ofertaslaborales`(`nombre`, `jornadalaboral`, `estado`, `idempresa`) VALUES (%s, %s, %s, %s)", (oferta.nombre, oferta.jornadalaboral, oferta.estado, oferta.idempresa))
-            conn.commit()
-            conn.close()
-            return {"resultado": "Oferta creado"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+            db_oferta = Oferta(**model_dump(oferta))
+            db.add(db_oferta)
+            db.commit()
+            return {"resultado": "Oferta creada"}
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al crear la oferta"}
         finally:
-            conn.close()
-        
+            db.close()
 
-    def get_oferta(self, oferta_id: int):
+    def get_oferta(oferta_id: int):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM ofertaslaborales WHERE idoferta = %s", (oferta_id,))
-            result = cursor.fetchone()
-            payload = []
-            content = {} 
-            
-            content={
-                    'idoferta':int(result[0]),
-                    'nombre':result[1],
-                    'jornadalaboral':result[2],
-                    'estado':int(result[3]),
-                    'fechacreacion':result[4],
-                    'idempresa':int(result[5])
-            }
-            payload.append(content)
-            
-            json_data = jsonable_encoder(content)            
-            if result:
-               return  json_data
-            else:
-                raise HTTPException(status_code=404, detail="Oferta not found")  
-                
-        except mysql.connector.Error as err:
-            conn.rollback()
+            oferta = db.query(Oferta).filter(Oferta.idoferta == oferta_id).first()
+            if oferta is None:
+                raise HTTPException(status_code=404, detail="Oferta not found")
+            return jsonable_encode(oferta)
         finally:
-            conn.close()
-       
-    def get_ofertas(self):
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM ofertaslaborales")
-            result = cursor.fetchall()
-            payload = []
-            content = {} 
-            for data in result:
-                content={
-                    'idoferta':data[0],
-                    'nombre':data[1],
-                    'jornadalaboral':data[2],
-                    'estado':data[3],
-                    'fechacreacion':data[4],
-                    'idempresa':data[5]
-                }
-                payload.append(content)
-                content = {}
-            json_data = jsonable_encoder(payload)        
-            if result:
-               return {"resultado": json_data}
-            else:
-                raise HTTPException(status_code=404, detail="Oferta not found")  
-                
-        except mysql.connector.Error as err:
-            conn.rollback()
-        finally:
-            conn.close()
+            db.close()
 
-
-    def update_oferta(self, oferta: Oferta):
+    def get_ofertas():
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""UPDATE ofertaslaborales 
-                           SET idoferta = %s,
-                           nombre = %s,
-                           jornadalaboral = %s,
-                           estado = %s,
-                           fechacreacion = %s,
-                           idempresa = %s,
-                           WHERE idoferta = %s""", (oferta.idoferta,
-                           oferta.nombre,oferta.jornadalaboral,oferta.estado,
-                           oferta.fechacreacion,oferta.idempresa,oferta.idoferta,))
-            conn.commit()
-            conn.close()
-            return {"resultado": "Oferta actualizado"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+            ofertas = db.query(Oferta).all()
+            if not ofertas:
+                raise HTTPException(status_code=404, detail="No ofertas found")
+            return {"resultado": jsonable_encode(ofertas)}
         finally:
-            conn.close()
+            db.close()
 
-    def delete_oferta(self, oferta_id: int):
+    def update_oferta(oferta: OfertaIn):
+        db = get_db_connection()
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM ofertaslaborales WHERE idoferta = %s", (oferta_id,))
-            conn.commit()
-            conn.close()
-            return {"resultado": "Oferta eliminado"}
-        except mysql.connector.Error as err:
-            conn.rollback()
+            db_oferta = db.query(Oferta).filter(Oferta.idoferta == oferta.idoferta).first()
+            if db_oferta is None:
+                raise HTTPException(status_code=404, detail="Oferta not found")
+            for var, value in vars(oferta).items():
+                setattr(db_oferta, var, value) if value else None
+            db.commit()
+            return {"resultado": "Oferta actualizada"}
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al actualizar la oferta"}
         finally:
-            conn.close()
+            db.close()
+
+    def delete_oferta(oferta_id: int):
+        db = get_db_connection()
+        try:
+            db_oferta = db.query(Oferta).filter(Oferta.idoferta == oferta_id).first()
+            if db_oferta is None:
+                raise HTTPException(status_code=404, detail="Oferta not found")
+            db.delete(db_oferta)
+            db.commit()
+            return {"resultado": "Oferta eliminada"}
+        except SQLAlchemyError:
+            db.rollback()
+            return {"resultado": "Error al eliminar la oferta"}
+        finally:
+            db.close()
