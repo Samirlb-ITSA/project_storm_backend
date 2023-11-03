@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from controllers.empresa_controller import *
-from models.empresa_model import Empresa
+from models.empresa_model import EmpresaIn
 
 router = APIRouter()
 
@@ -8,12 +8,12 @@ nuevo_empresa = EmpresaController()
 
 
 @router.post("/create_empresa")
-async def create_empresa(empresa: Empresa):
+async def create_empresa(empresa: EmpresaIn):
     rpta = nuevo_empresa.create_empresa(empresa)
     return rpta
 
 
-@router.get("/get_empresa/{empresa_id}",response_model=Empresa)
+@router.get("/get_empresa/{empresa_id}",response_model=EmpresaIn)
 async def get_empresa(empresa_id: int):
     rpta = nuevo_empresa.get_empresa(empresa_id)
     return rpta
@@ -24,7 +24,7 @@ async def get_empresas():
     return rpta
 
 @router.put("/update_empresa")
-async def update_empresa(empresa: Empresa):
+async def update_empresa(empresa: EmpresaIn):
     rpta = nuevo_empresa.update_empresa(empresa)
     return rpta
 

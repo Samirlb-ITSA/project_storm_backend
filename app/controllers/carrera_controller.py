@@ -3,13 +3,13 @@ from config.db_config import get_db_connection
 from models.carrera_model import Carrera, CarreraIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
-from pydantic.main import model_dump
+from sqlalchemy.orm import joinedload
 
 class CarreraController:
     def create_carrera(carrera: CarreraIn):
         db = get_db_connection()
         try:
-            db_carrera = Carrera(**model_dump(carrera))
+            db_carrera = Carrera(carrera.model_dump())
             db.add(db_carrera)
             db.commit()
             return {"resultado": "Carrera creada"}
@@ -22,7 +22,7 @@ class CarreraController:
     def get_carrera(carrera_id: int):
         db = get_db_connection()
         try:
-            carrera = db.query(Carrera).filter(Carrera.idcarrera == carrera_id).first()
+            carrera = db.query(Carrera).options(joinedload(Carrera.users)).filter(Carrera.idcarrera == carrera_id).first()
             if carrera is None:
                 raise HTTPException(status_code=404, detail="Carrera not found")
             return jsonable_encoder(carrera)
@@ -32,7 +32,7 @@ class CarreraController:
     def get_carreras():
         db = get_db_connection()
         try:
-            carreras = db.query(Carrera).all()
+            carreras = db.query(Carrera).options(joinedload(Carrera.users)).all()
             if not carreras:
                 raise HTTPException(status_code=404, detail="No carreras found")
             return {"resultado": jsonable_encoder(carreras)}

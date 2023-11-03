@@ -17,8 +17,8 @@ class Carrera(Base):
     idcarrera = Column(Integer, primary_key=True, index=True)
     nombre = Column(String)
 
-    # Define la relación con User
-    users = relationship("User", secondary=usuarioxcarrera, back_populates="carreras")
+    # Define la relación con usuarios
+    users = relationship("usuarios", secondary=usuarioxcarrera, back_populates="carrera")
 
 class CarreraIn(BaseModel):
     idcarrera: int

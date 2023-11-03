@@ -13,7 +13,7 @@ class Aplicante(Base):
     idusuario = Column(Integer, ForeignKey('usuarios.idusuario'))
 
     # Define la relación con User
-    user = relationship("User", back_populates="aplicantes")
+    user = relationship("usuarios", back_populates="aplicantes")
 
 class AplicanteIn(BaseModel):
     idaplicante: int

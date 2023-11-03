@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from controllers.carrera_controller import *
-from models.carrera_model import Carrera
+from models.carrera_model import CarreraIn
 
 router = APIRouter()
 
@@ -8,12 +8,12 @@ nuevo_carrera = CarreraController()
 
 
 @router.post("/create_carrera")
-async def create_carrera(carrera: Carrera):
+async def create_carrera(carrera: CarreraIn):
     rpta = nuevo_carrera.create_carrera(carrera)
     return rpta
 
 
-@router.get("/get_carrera/{carrera_id}",response_model=Carrera)
+@router.get("/get_carrera/{carrera_id}",response_model=CarreraIn)
 async def get_carrera(carrera_id: int):
     rpta = nuevo_carrera.get_carrera(carrera_id)
     return rpta
@@ -24,7 +24,7 @@ async def get_carreras():
     return rpta
 
 @router.put("/update_carrera")
-async def update_carrera(carrera: Carrera):
+async def update_carrera(carrera: CarreraIn):
     rpta = nuevo_carrera.update_carrera(carrera)
     return rpta
 

@@ -4,13 +4,12 @@ from config.db_config import get_db_connection
 from models.aplicante_model import Aplicante, AplicanteIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
-from pydantic.main import model_dump
 
 class AplicanteController:
     def create_aplicante(aplicante: AplicanteIn):
         db = get_db_connection()
         try:
-            db_aplicante = Aplicante(**model_dump(aplicante))
+            db_aplicante = Aplicante(aplicante.model_dump())
             db.add(db_aplicante)
             db.commit()
             return {"resultado": "Aplicante creado"}
@@ -23,7 +22,7 @@ class AplicanteController:
     def get_aplicante(aplicante_id: int):
         db = get_db_connection()
         try:
-            aplicante = db.query(Aplicante).filter(Aplicante.idaplicante == aplicante_id).first()
+            aplicante = db.query(Aplicante).options(joinedload(Aplicante.user)).filter(Aplicante.idaplicante == aplicante_id).first()
             if aplicante is None:
                 raise HTTPException(status_code=404, detail="Aplicante not found")
             return jsonable_encoder(aplicante)
@@ -33,7 +32,7 @@ class AplicanteController:
     def get_aplicantes():
         db = get_db_connection()
         try:
-            aplicantes = db.query(Aplicante).all()
+            aplicantes = db.query(Aplicante).options(joinedload(Aplicante.user)).all()
             if not aplicantes:
                 raise HTTPException(status_code=404, detail="No aplicantes found")
             return {"resultado": jsonable_encoder(aplicantes)}
@@ -49,7 +48,7 @@ class AplicanteController:
             for var, value in vars(aplicante).items():
                 setattr(db_aplicante, var, value) if value else None
             db.commit()
-            return {"resultado": "Aplicante actualizada"}
+            return {"resultado": "Aplicante actualizado"}
         except SQLAlchemyError:
             db.rollback()
             return {"resultado": "Error al actualizar el aplicante"}

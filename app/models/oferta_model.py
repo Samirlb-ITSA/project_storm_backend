@@ -19,5 +19,4 @@ class OfertaIn(BaseModel):
     nombre: str
     jornadalaboral: str
     estado: int
-    fechacreacion: date
     idempresa: int

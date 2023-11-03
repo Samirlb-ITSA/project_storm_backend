@@ -36,8 +36,3 @@ async def update_user(user: UserIn):
 async def delete_user(user_id: int):
     rpta = nuevo_usuario.delete_user(user_id)
     return rpta
-
-@router.post("/login")
-async def login(login: Login):
-    user_data = nuevo_usuario.authenticate_user(login)
-    return user_data

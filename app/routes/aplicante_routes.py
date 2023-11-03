@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from controllers.aplicante_controller import *
-from models.aplicante_model import Aplicante
+from models.aplicante_model import AplicanteIn
 
 router = APIRouter()
 
@@ -8,12 +8,12 @@ nuevo_aplicante = AplicanteController()
 
 
 @router.post("/create_aplicante")
-async def create_aplicante(aplicante: Aplicante):
+async def create_aplicante(aplicante: AplicanteIn):
     rpta = nuevo_aplicante.create_aplicante(aplicante)
     return rpta
 
 
-@router.get("/get_aplicante/{aplicante_id}",response_model=Aplicante)
+@router.get("/get_aplicante/{aplicante_id}",response_model=AplicanteIn)
 async def get_aplicante(aplicante_id: int):
     rpta = nuevo_aplicante.get_aplicante(aplicante_id)
     return rpta
@@ -24,7 +24,7 @@ async def get_aplicantes():
     return rpta
 
 @router.put("/update_aplicante")
-async def update_aplicante(aplicante: Aplicante):
+async def update_aplicante(aplicante: AplicanteIn):
     rpta = nuevo_aplicante.update_aplicante(aplicante)
     return rpta
 

@@ -2,21 +2,24 @@ import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
 from models.user_model import UserIn, User
-from models.rol_model import Role
+from models.rol_model import Rol
+from models.carrera_model import Carrera
+from models.atributo_model import Atributo
+
 from models.login_model import Login
 from fastapi.encoders import jsonable_encoder
 from passlib.context import CryptContext
 from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import SQLAlchemyError
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-from sqlalchemy.exc import SQLAlchemyError
-from pydantic.main import model_dump
 
 class UserController:
     def create_user(user: UserIn):
         db = get_db_connection()
         try:
-            db_user = User(**model_dump(user))
+            db_user = User(UserIn.model_dump())
             db.add(db_user)
             db.commit()
 
@@ -61,6 +64,14 @@ class UserController:
             if not users:
                 raise HTTPException(status_code=404, detail="No users found")
             return {"resultado": jsonable_encoder(users)}
+        finally:
+            db.close()
+
+    def getUsersFromDb(self):
+        db = get_db_connection()
+        try:
+            users = db.query(User).options(joinedload(User.roles), joinedload(User.carreras), joinedload(User.atributos), joinedload(User.aplicantes)).all()
+            return users
         finally:
             db.close()
 

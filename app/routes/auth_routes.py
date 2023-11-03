@@ -4,7 +4,6 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from models.user_model import User
 from routes.user_routes import UserController
 from passlib.context import CryptContext
-from pydantic import BaseModel
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from dotenv import load_dotenv
@@ -23,7 +22,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
-@router.post("/token")
+@router.post("/login")
 async def authenticate(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(users, form_data.username, form_data.password)
     access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))

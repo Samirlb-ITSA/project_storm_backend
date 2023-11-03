@@ -17,8 +17,8 @@ class Atributo(Base):
     idatributo = Column(Integer, primary_key=True, index=True)
     nombre = Column(String)
 
-    # Define la relación con User
-    users = relationship("User", secondary=atributosxusuario, back_populates="atributos")
+    # Define la relación con usuarios
+    users = relationship("usuarios", secondary=atributosxusuario, back_populates="atributos")
 
 class AtributoIn(BaseModel):
     idatributo: int

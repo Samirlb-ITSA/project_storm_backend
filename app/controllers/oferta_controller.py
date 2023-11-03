@@ -2,15 +2,14 @@ import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
 from models.oferta_model import Oferta, OfertaIn
-from fastapi.encoders import jsonable_encode
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
-from pydantic.main import model_dump
 
 class OfertaController:
     def create_oferta(oferta: OfertaIn):
         db = get_db_connection()
         try:
-            db_oferta = Oferta(**model_dump(oferta))
+            db_oferta = Oferta(oferta.model_dump())
             db.add(db_oferta)
             db.commit()
             return {"resultado": "Oferta creada"}
@@ -26,7 +25,7 @@ class OfertaController:
             oferta = db.query(Oferta).filter(Oferta.idoferta == oferta_id).first()
             if oferta is None:
                 raise HTTPException(status_code=404, detail="Oferta not found")
-            return jsonable_encode(oferta)
+            return jsonable_encoder(oferta)
         finally:
             db.close()
 
@@ -36,7 +35,7 @@ class OfertaController:
             ofertas = db.query(Oferta).all()
             if not ofertas:
                 raise HTTPException(status_code=404, detail="No ofertas found")
-            return {"resultado": jsonable_encode(ofertas)}
+            return {"resultado": jsonable_encoder(ofertas)}
         finally:
             db.close()
 

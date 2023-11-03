@@ -18,7 +18,7 @@ class Rol(Base):
     nombre = Column(String)
 
     # Define la relación con User
-    users = relationship("User", secondary=rolxusuario, back_populates="roles")
+    users = relationship("Usuarios", secondary=rolxusuario, back_populates="rol")
 
 class RolIn(BaseModel):
     idrol: int

@@ -4,13 +4,12 @@ from config.db_config import get_db_connection
 from models.empresa_model import Empresa, EmpresaIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
-from pydantic.main import model_dump
 
 class EmpresaController:
     def create_empresa(empresa: EmpresaIn):
         db = get_db_connection()
         try:
-            db_empresa = Empresa(**model_dump(empresa))
+            db_empresa = Empresa(empresa.model_dump())
             db.add(db_empresa)
             db.commit()
             return {"resultado": "Empresa creada"}

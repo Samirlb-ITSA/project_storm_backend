@@ -4,13 +4,12 @@ from config.db_config import get_db_connection
 from models.rol_model import Rol, RolIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
-from pydantic.main import model_dump
-
+from sqlalchemy.orm import joinedload
 class RolController:
     def create_rol(rol: RolIn):
         db = get_db_connection()
         try:
-            db_rol = Rol(**model_dump(rol))
+            db_rol = Rol(rol.model_dump())
             db.add(db_rol)
             db.commit()
             return {"resultado": "Rol creado"}
@@ -23,7 +22,7 @@ class RolController:
     def get_rol(rol_id: int):
         db = get_db_connection()
         try:
-            rol = db.query(Rol).filter(Rol.idrol == rol_id).first()
+            rol = db.query(Rol).options(joinedload(Rol.users)).filter(Rol.idrol == rol_id).first()
             if rol is None:
                 raise HTTPException(status_code=404, detail="Rol not found")
             return jsonable_encoder(rol)
@@ -33,7 +32,7 @@ class RolController:
     def get_roles():
         db = get_db_connection()
         try:
-            roles = db.query(Rol).all()
+            roles = db.query(Rol).options(joinedload(Rol.users)).all()
             if not roles:
                 raise HTTPException(status_code=404, detail="No roles found")
             return {"resultado": jsonable_encoder(roles)}
