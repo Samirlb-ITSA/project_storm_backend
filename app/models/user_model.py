@@ -41,6 +41,6 @@ class UserIn(BaseModel):
     password: str
     status: int
     creationdate: datetime = datetime.now()
-    # role_ids: List[int] = []
-    # career_ids: List[int] = []
-    # attribute_ids: List[int] = []
+    roles: List[int] = []
+    careers: List[int] = []
+    # attributes: List[int] = []

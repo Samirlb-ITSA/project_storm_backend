@@ -22,26 +22,25 @@ class UserController:
         db = get_db_connection()
         try:
             user.password = pwd_context.hash(user.password)
-            
+
             db_user = User(**user.model_dump())
             db.add(db_user)
-            db.commit()
 
-            for role_id in user.role_ids:
+            for role_id in user.roles:
                 role = db.query(Role).get(role_id)
                 if role is not None:
                     db_user.roles.append(role)
 
-            for career_id in user.career_ids:
+            for career_id in user.careers:
                 career = db.query(Career).get(career_id)
                 if career is not None:
                     db_user.careers.append(career)
 
-            for attribute_id in user.attribute_ids:
-                attribute = db.query(Attribute).get(attribute_id)
-                if attribute is not None:
-                    db_user.attributes.append(attribute)
-
+            # for attribute_id in user:
+            #     attribute = db.query(Attribute).get(attribute_id)
+            #     if attribute is not None:
+            #         db_user.attributes.append(attribute)
+            db.commit()
             return {"result": "Usuario creado"}
         except SQLAlchemyError:
             db.rollback()
