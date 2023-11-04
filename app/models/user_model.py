@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from typing import List
 from models.role_model import Role, RoleIn
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -39,16 +40,16 @@ class User(Base):
     creationdate = Column(DateTime)
 
     # Define the relationship with Role
-    roles = relationship("Role", secondary=rolexuser, back_populates="users")
+    # roles = relationship("Role", secondary=rolexuser, back_populates="users")
     
     # Define the relationship with Career
-    careers = relationship("Career", secondary=userxcareer, back_populates="users")
+    # careers = relationship("Career", secondary=userxcareer, back_populates="users")
 
     # Define the relationship with Attribute
-    attributes = relationship("Attribute", secondary=attributesxuser, back_populates="users")
+    # attributes = relationship("Attribute", secondary=attributesxuser, back_populates="users")
 
     # Define the relationship with Applicant
-    applicants = relationship("Applicant", back_populates="users")
+    # applicants = relationship("Applicant", back_populates="users")
 
 class UserIn(BaseModel):
     firstname: str
@@ -58,6 +59,7 @@ class UserIn(BaseModel):
     address: str
     password: str
     status: int
-    role_ids: List[int] = []
-    career_ids: List[int] = []
-    attribute_ids: List[int] = []
+    creationdate: datetime = datetime.now()
+    # role_ids: List[int] = []
+    # career_ids: List[int] = []
+    # attribute_ids: List[int] = []
