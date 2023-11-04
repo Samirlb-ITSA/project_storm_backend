@@ -27,20 +27,20 @@ class UserController:
             db.add(db_user)
             db.commit()
 
-            # for role_id in user.role_ids:
-            #     role = db.query(Role).get(role_id)
-            #     if role is not None:
-            #         db_user.roles.append(role)
+            for role_id in user.role_ids:
+                role = db.query(Role).get(role_id)
+                if role is not None:
+                    db_user.roles.append(role)
 
-            # for career_id in user.career_ids:
-            #     career = db.query(Career).get(career_id)
-            #     if career is not None:
-            #         db_user.careers.append(career)
+            for career_id in user.career_ids:
+                career = db.query(Career).get(career_id)
+                if career is not None:
+                    db_user.careers.append(career)
 
-            # for attribute_id in user.attribute_ids:
-            #     attribute = db.query(Attribute).get(attribute_id)
-            #     if attribute is not None:
-            #         db_user.attributes.append(attribute)
+            for attribute_id in user.attribute_ids:
+                attribute = db.query(Attribute).get(attribute_id)
+                if attribute is not None:
+                    db_user.attributes.append(attribute)
 
             return {"result": "Usuario creado"}
         except SQLAlchemyError:
@@ -52,8 +52,7 @@ class UserController:
     def get_user(self, user_id: int):
         db = get_db_connection()
         try:
-            user = db.query(User).filter(User.userid == user_id).first()
-            # user = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes), joinedload(User.applicants)).filter(User.userid == user_id).first()
+            user = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes)).filter(User.userid == user_id).first()
             if user is None:
                 raise HTTPException(status_code=404, detail="Usuario no encontrado")
             return jsonable_encoder(user)
@@ -63,8 +62,7 @@ class UserController:
     def get_users(self):
         db = get_db_connection()
         try:
-            users = db.query(User).all()
-            # users = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes), joinedload(User.applicants)).all()
+            users = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes)).all()
             if not users:
                 raise HTTPException(status_code=404, detail="No se encontraron usuarios")
             return {"resultado": jsonable_encoder(users)}
@@ -74,8 +72,7 @@ class UserController:
     def getUsersFromDb(self):
         db = get_db_connection()
         try:
-            users = db.query(User).all()
-            # users = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes), joinedload(User.applicants)).all()
+            users = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes)).all()
             return users
         finally:
             db.close()

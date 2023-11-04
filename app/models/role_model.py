@@ -1,10 +1,8 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from config.db_config import Base
 from pydantic import BaseModel
-
-Base = declarative_base()
-
+from models.association_tables import rolexuser
 class Role(Base):
     __tablename__ = "role"
 
@@ -12,6 +10,7 @@ class Role(Base):
     name = Column(String)
 
     # Define the relationship with User
+    users = relationship("User", secondary=rolexuser, back_populates="roles")
 
 class RoleIn(BaseModel):
     roleid: int

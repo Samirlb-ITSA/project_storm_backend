@@ -1,15 +1,8 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from models.association_tables import userxcareer
 from pydantic import BaseModel
-
-Base = declarative_base()
-
-# Define the association table for User and Career
-userxcareer = Table('userxcareer', Base.metadata,
-    Column('userid', Integer, ForeignKey('users.userid')),
-    Column('careerid', Integer, ForeignKey('career.careerid'))
-)
+from config.db_config import Base
 
 class Career(Base):
     __tablename__ = "career"
@@ -18,7 +11,7 @@ class Career(Base):
     name = Column(String)
 
     # Define the relationship with users
-    users = relationship("User", secondary=userxcareer, back_populates="career")
+    users = relationship("User", secondary=userxcareer, back_populates="careers")
 
 class CareerIn(BaseModel):
     careerid: int

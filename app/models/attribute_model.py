@@ -1,15 +1,8 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from config.db_config import Base
 from pydantic import BaseModel
-
-Base = declarative_base()
-
-# Define the association table for User and Attribute
-attributesxuser = Table('attributesxuser', Base.metadata,
-    Column('userid', Integer, ForeignKey('users.userid')),
-    Column('attributeid', Integer, ForeignKey('attributes.attributeid'))
-)
+from models.association_tables import attributesxuser
 
 class Attribute(Base):
     __tablename__ = "attributes"

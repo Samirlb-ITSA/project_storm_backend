@@ -1,7 +1,7 @@
 import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.role_model import Role, RoleIn
+from models.user_model import Role, RoleIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
