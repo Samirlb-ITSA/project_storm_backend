@@ -1,4 +1,3 @@
-import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
 from models.user_model import UserIn, User
