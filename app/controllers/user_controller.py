@@ -53,7 +53,9 @@ class UserController:
             user = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes)).filter(User.userid == user_id).first()
             if user is None:
                 raise HTTPException(status_code=404, detail="Usuario no encontrado")
-            return jsonable_encoder(user)
+            user_dict = dict(user.__dict__)
+            user_dict.pop('_sa_instance_state', None)
+            return jsonable_encoder(user_dict)
         finally:
             db.close()
 
@@ -63,7 +65,10 @@ class UserController:
             users = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes)).all()
             if not users:
                 raise HTTPException(status_code=404, detail="No se encontraron usuarios")
-            return {"resultado": jsonable_encoder(users)}
+            users_dict = [dict(user.__dict__) for user in users]
+            for user_dict in users_dict:
+                user_dict.pop('_sa_instance_state', None)
+            return {"resultado": jsonable_encoder(users_dict)}
         finally:
             db.close()
 

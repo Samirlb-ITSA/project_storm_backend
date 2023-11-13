@@ -28,7 +28,7 @@ class CompanyController:
         finally:
             db.close()
 
-    def get_companies():
+    def get_companies(self):
         db = get_db_connection()
         try:
             companies = db.query(Company).all()

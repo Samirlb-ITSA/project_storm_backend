@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from dotenv import load_dotenv
-from controllers.auth_controller import *
+from controllers.auth_controller import AuthController
 import os
 
 load_dotenv()
@@ -19,5 +19,5 @@ auth_controller = AuthController()
 
 @router.post("/login")
 async def authenticate_route(form_data: OAuth2PasswordRequestForm = Depends()):
-    response = auth_controller.authenticate(form_data)
+    response = await auth_controller.authenticate(form_data) 
     return response

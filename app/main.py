@@ -11,7 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "https://project-storm-frontend.onrender.com"
+    "https://project-storm-frontend.onrender.com",
+    "http://localhost:5173"
 ]
 
 app.add_middleware(

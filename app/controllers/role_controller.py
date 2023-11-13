@@ -29,7 +29,7 @@ class RoleController:
         finally:
             db.close()
 
-    def get_roles():
+    def get_roles(self):
         db = get_db_connection()
         try:
             roles = db.query(Role).options(joinedload(Role.users)).all()
