@@ -38,7 +38,7 @@ async def delete_user(user_id: int, current_user: User = Depends(auth_controller
     return response
 
 
-@router.post("/import")
+@router.post("/users/import")
 async def import_users(file: UploadFile = File(...), current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_user.import_users(file)
     return response
