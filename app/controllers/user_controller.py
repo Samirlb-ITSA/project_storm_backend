@@ -1,4 +1,5 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile, File
+import pandas as pd
 from config.db_config import get_db_connection
 from models.user_model import UserIn, User
 from models.role_model import Role
@@ -110,6 +111,45 @@ class UserController:
             return {"resultado": "Error al eliminar el usuario"}
         finally:
             db.close()
+
+    async def import_users(self, file: UploadFile = File(...)):
+        df = pd.read_excel(file.file)
+        users = df.to_dict(orient='records')
+
+        db = get_db_connection()
+        created_count = 0
+        failed_count = 0
+        try:
+            for user in users:
+                try:
+                    user['password'] = pwd_context.hash(user['password'])
+
+                    db_user = User(**user)
+                    db.add(db_user)
+
+                    for role_id in user['roles']:
+                        role = db.query(Role).get(role_id)
+                        if role is not None:
+                            db_user.roles.append(role)
+
+                    for career_id in user['careers']:
+                        career = db.query(Career).get(career_id)
+                        if career is not None:
+                            db_user.careers.append(career)
+
+                    db.commit()
+                    created_count += 1
+                except SQLAlchemyError:
+                    db.rollback()
+                    failed_count += 1
+        finally:
+            db.close()
+
+        return {
+            "result": "Upload completed",
+            "users_created": created_count,
+            "users_failed": failed_count
+        }
 
 
 ##user_controller = UserController()

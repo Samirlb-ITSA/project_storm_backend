@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from fastapi.security import OAuth2PasswordBearer
 from controllers.user_controller import *
 from models.user_model import UserIn
@@ -35,4 +35,10 @@ async def update_user(user: UserIn, current_user: User = Depends(auth_controller
 @router.delete("/delete_user/{user_id}")
 async def delete_user(user_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_user.delete_user(user_id)
+    return response
+
+
+@router.post("/import")
+async def import_users(file: UploadFile = File(...), current_user: User = Depends(auth_controller.get_current_active_user)):
+    response = new_user.import_users(file)
     return response

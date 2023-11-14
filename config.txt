@@ -19,6 +19,7 @@ pip install "python-jose[cryptography]"
 pip install "passlib[bcrypt]"
 pip install SQLAlchemy
 pip install psycopg2-binary
+pip install pandas
 
 // Delete cache on MacOs
 find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf (on MacOs)
