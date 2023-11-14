@@ -11,6 +11,7 @@ from fastapi.encoders import jsonable_encoder
 from passlib.context import CryptContext
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
 
 from passlib.context import CryptContext
 
@@ -24,7 +25,6 @@ class UserController:
             user.password = pwd_context.hash(user.password)
 
             db_user = User(**user.model_dump())
-            db.add(db_user)
 
             for role_id in user.roles:
                 role = db.query(Role).get(role_id)
@@ -40,6 +40,8 @@ class UserController:
             #     attribute = db.query(Attribute).get(attribute_id)
             #     if attribute is not None:
             #         db_user.attributes.append(attribute)
+
+            db.add(db_user)
             db.commit()
             return {"result": "Usuario creado"}
         except SQLAlchemyError:
@@ -112,43 +114,45 @@ class UserController:
         finally:
             db.close()
 
-    async def import_users(self, file: UploadFile = File(...)):
+    def import_users(self, file: UploadFile = File(...)):
         df = pd.read_excel(file.file)
         users = df.to_dict(orient='records')
 
         db = get_db_connection()
-        created_count = 0
-        failed_count = 0
+        created_users = []
+        failed_users = []
         try:
-            for user in users:
+            for i, user in enumerate(users, start=1):
                 try:
-                    user['password'] = pwd_context.hash(user['password'])
+                    user['password'] = pwd_context.hash(str(user['password']))
 
-                    db_user = User(**user)
+                    # Create the User object without the 'roles' and 'careers' fields
+                    db_user = User(firstname=user['firstname'], lastname=user['lastname'], email=user['email'],
+                                cellphone=user['cellphone'], address=user['address'], password=user['password'],
+                                status=user['status'], creationdate=datetime.utcnow())
+
+
+                    role = db.query(Role).get(user['roles'])
+                    if role is not None:
+                        db_user.roles.append(role)
+
+                    career = db.query(Career).get(user['careers'])
+                    if career is not None:
+                        db_user.careers.append(career)
+
                     db.add(db_user)
-
-                    for role_id in user['roles']:
-                        role = db.query(Role).get(role_id)
-                        if role is not None:
-                            db_user.roles.append(role)
-
-                    for career_id in user['careers']:
-                        career = db.query(Career).get(career_id)
-                        if career is not None:
-                            db_user.careers.append(career)
-
                     db.commit()
-                    created_count += 1
-                except SQLAlchemyError:
+                    created_users.append({"email": user['email'], "position": i})
+                except SQLAlchemyError as error:
+                    print(error)
                     db.rollback()
-                    failed_count += 1
+                    failed_users.append({"email": user['email'], "position": i})
         finally:
             db.close()
-
         return {
             "result": "Upload completed",
-            "users_created": created_count,
-            "users_failed": failed_count
+            "users_created": created_users,
+            "users_failed": failed_users
         }
 
 

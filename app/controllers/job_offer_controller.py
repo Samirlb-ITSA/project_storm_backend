@@ -1,4 +1,3 @@
-import mysql.connector
 from fastapi import HTTPException
 from config.db_config import get_db_connection
 from models.job_offer_model import JobOffer, JobOfferIn
