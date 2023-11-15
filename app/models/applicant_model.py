@@ -6,7 +6,7 @@ class Applicant(Base):
     __tablename__ = "applicants"
 
     applicantid = Column(Integer, primary_key=True, index=True)
-    offerid = Column(Integer)
+    offerid = Column(Integer, ForeignKey('joboffers.offerid'))
     userid = Column(Integer, ForeignKey('users.userid'))
 
     # Define the relationship with User

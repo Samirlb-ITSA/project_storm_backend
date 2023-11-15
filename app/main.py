@@ -6,6 +6,7 @@ from routes.career_routes import router as carrera_router
 from routes.job_offer_routes import router as ofertas_router
 from routes.applicant_routes import router as aplicante_router
 from routes.auth_routes import router as auth_router
+from routes.statistics_routes import router as statistics_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -30,6 +31,7 @@ app.include_router(empresa_router)
 app.include_router(carrera_router)
 app.include_router(ofertas_router)
 app.include_router(aplicante_router)
+app.include_router(statistics_router)
 
 if __name__ == "__main__":
     import uvicorn
