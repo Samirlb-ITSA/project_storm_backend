@@ -18,21 +18,16 @@ class StatisticsController:
         # Initialize the statistics
         stats = {
             "total_job_offers": 0,
-            "job_offers_per_user": {},
-            "success_rate": {},
+            "active_job_offers_per_user": 0,
+            "new_job_offers_percentage_last_month": 0,
             "total_users": 0,
             "new_users_percentage_last_month": 0,
+            "users_applied_to_jobs_count": 0,
         }
 
-        # Calculate the statistics
-        for user in non_admin_users:
-            # Count the number of job offers for each user
-            job_offers_count = db.query(Applicant).filter(Applicant.userid == user.userid).count()
-            stats["job_offers_per_user"][user.email] = job_offers_count
-
-            # Count the number of successful job offers for each user
-            successful_job_offers_count = db.query(Applicant).join(JobOffer, Applicant.offerid == JobOffer.offerid).filter(Applicant.userid == user.userid, JobOffer.status == 1).count()
-            stats["success_rate"][user.email] = successful_job_offers_count / job_offers_count if job_offers_count > 0 else 0
+        # Count the number of active job offers
+        active_job_offers_count = db.query(JobOffer).filter(JobOffer.status == 1).count()
+        stats["active_job_offers_per_user"] = active_job_offers_count
 
         # Count the total number of job offers
         stats["total_job_offers"] = db.query(JobOffer).count()
@@ -40,11 +35,21 @@ class StatisticsController:
         # Count the total number of users
         stats["total_users"] = db.query(User).count()
 
-        # Count the total number of users registered in the last month
+        # Count the total number of job offers created in the last month
         one_month_ago = datetime.now() - timedelta(days=30)
+        new_job_offers_last_month = db.query(JobOffer).filter(JobOffer.status == 1, JobOffer.creationdate >= one_month_ago).count()
+
+        # Calculate the percentage of new job offers in the last month
+        stats["new_job_offers_percentage_last_month"] = round((new_job_offers_last_month / stats["total_job_offers"]) * 100) if stats["total_job_offers"] > 0 else 0
+
+        # Count the total number of users registered in the last month
         new_users_last_month = db.query(User).filter(User.creationdate >= one_month_ago).count()
 
         # Calculate the percentage of new users in the last month
-        stats["new_users_percentage_last_month"] = (new_users_last_month / stats["total_users"]) * 100 if stats["total_users"] > 0 else 0
+        stats["new_users_percentage_last_month"] = round((new_users_last_month / stats["total_users"]) * 100) if stats["total_users"] > 0 else 0
+
+        # Count users who have applied to job offers
+        users_applied_to_jobs_count = db.query(User).join(Applicant, User.userid == Applicant.userid).distinct().count()
+        stats["users_applied_to_jobs_count"] = users_applied_to_jobs_count
 
         return stats
