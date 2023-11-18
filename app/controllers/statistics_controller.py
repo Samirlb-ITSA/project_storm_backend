@@ -5,6 +5,7 @@ from config.db_config import get_db_connection
 from models.user_model import User
 from models.job_offer_model import JobOffer
 from models.applicant_model import Applicant
+from models.company_model import Company
 from models.role_model import Role
 from datetime import datetime, timedelta
 
@@ -23,6 +24,9 @@ class StatisticsController:
             "total_users": 0,
             "new_users_percentage_last_month": 0,
             "users_applied_to_jobs_count": 0,
+            "total_companies": 0,
+            "job_offers_current_year": [0]*12,
+            "job_offers_last_year": [0]*12
         }
 
         # Count the number of active job offers
@@ -51,5 +55,18 @@ class StatisticsController:
         # Count users who have applied to job offers
         users_applied_to_jobs_count = db.query(User).join(Applicant, User.userid == Applicant.userid).distinct().count()
         stats["users_applied_to_jobs_count"] = users_applied_to_jobs_count
+
+        companies = db.query(Company).count()
+        stats["total_companies"] = companies
+
+        current_year = datetime.now().year
+        last_year = current_year - 1
+
+        job_offers = db.query(JobOffer).all()
+        for job_offer in job_offers:
+            if job_offer.creationdate.year == current_year:
+                stats["job_offers_current_year"][job_offer.creationdate.month - 1] += 1
+            elif job_offer.creationdate.year == last_year:
+                stats["job_offers_last_year"][job_offer.creationdate.month - 1] += 1
 
         return stats
