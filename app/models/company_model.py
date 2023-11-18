@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime, Table, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
 
 Base = declarative_base()
 
@@ -13,11 +15,16 @@ class Company(Base):
     cellphone = Column(Integer)
     address = Column(String)
     nit = Column(Integer)
+    status = Column(Integer)
+    creationdate = Column(DateTime)
+    
 
 class CompanyIn(BaseModel):
-    companyid: int
+    #companyid: Optional[int] = None
     name: str
     email: str
     cellphone: int
     address: str
     nit: int
+    creationdate: datetime = datetime.now()
+    #creationdate: datetime = datetime.now()

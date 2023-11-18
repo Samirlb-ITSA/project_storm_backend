@@ -5,16 +5,18 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
 
 class CompanyController:
-    def create_company(company: CompanyIn):
+    def create_company(self, company: CompanyIn):
         db = get_db_connection()
         try:
-            db_company = Company(company.model_dump())
+            db_company = Company(**company.model_dump())
             db.add(db_company)
             db.commit()
             return {"resultado": "Empresa creada"}
-        except SQLAlchemyError:
+        except SQLAlchemyError as err:
             db.rollback()
+            print(f"Error de MySQL: {err}")
             return {"resultado": "Error al crear la empresa"}
+            
         finally:
             db.close()
 
