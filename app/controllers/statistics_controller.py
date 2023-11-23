@@ -9,64 +9,70 @@ from models.company_model import Company
 from models.role_model import Role
 from datetime import datetime, timedelta
 
-router = APIRouter()
-
 class StatisticsController:
-    def getStatistics(self):
-        db = get_db_connection()
-        non_admin_users = db.query(User).join(User.roles).filter(Role.name != 'admin').all()
+    def __init__(self):
+        self.db = get_db_connection()
 
-        # Initialize the statistics
-        stats = {
-            "total_job_offers": 0,
-            "active_job_offers_per_user": 0,
-            "new_job_offers_percentage_last_month": 0,
-            "total_users": 0,
-            "new_users_percentage_last_month": 0,
-            "users_applied_to_jobs_count": 0,
-            "total_companies": 0,
-            "job_offers_current_year": [0]*12,
-            "job_offers_last_year": [0]*12
-        }
+    def get_total_users(self):
+        return self.db.query(User).count()
 
-        # Count the number of active job offers
-        active_job_offers_count = db.query(JobOffer).filter(JobOffer.status == 1).count()
-        stats["active_job_offers_per_user"] = active_job_offers_count
+    def get_active_job_offers(self):
+        return self.db.query(JobOffer).filter(JobOffer.status == 1).count()
 
-        # Count the total number of job offers
-        stats["total_job_offers"] = db.query(JobOffer).count()
+    def get_total_job_offers(self):
+        return self.db.query(JobOffer).count()
 
-        # Count the total number of users
-        stats["total_users"] = db.query(User).count()
-
-        # Count the total number of job offers created in the last month
+    def get_new_job_offers_last_month(self):
         one_month_ago = datetime.now() - timedelta(days=30)
-        new_job_offers_last_month = db.query(JobOffer).filter(JobOffer.status == 1, JobOffer.creationdate >= one_month_ago).count()
+        return self.db.query(JobOffer).filter(JobOffer.status == 1, JobOffer.creationdate >= one_month_ago).count()
 
-        # Calculate the percentage of new job offers in the last month
-        stats["new_job_offers_percentage_last_month"] = round((new_job_offers_last_month / stats["total_job_offers"]) * 100) if stats["total_job_offers"] > 0 else 0
+    def get_new_users_last_month(self):
+        one_month_ago = datetime.now() - timedelta(days=30)
+        return self.db.query(User).filter(User.creationdate >= one_month_ago).count()
 
-        # Count the total number of users registered in the last month
-        new_users_last_month = db.query(User).filter(User.creationdate >= one_month_ago).count()
+    def get_users_applied_to_jobs_count(self):
+        return self.db.query(User).join(Applicant, User.userid == Applicant.userid).distinct().count()
 
-        # Calculate the percentage of new users in the last month
-        stats["new_users_percentage_last_month"] = round((new_users_last_month / stats["total_users"]) * 100) if stats["total_users"] > 0 else 0
+    def get_total_companies(self):
+        return self.db.query(Company).count()
 
-        # Count users who have applied to job offers
-        users_applied_to_jobs_count = db.query(User).join(Applicant, User.userid == Applicant.userid).distinct().count()
-        stats["users_applied_to_jobs_count"] = users_applied_to_jobs_count
-
-        companies = db.query(Company).count()
-        stats["total_companies"] = companies
-
+    def get_job_offers_by_year(self):
         current_year = datetime.now().year
         last_year = current_year - 1
-
-        job_offers = db.query(JobOffer).all()
+        job_offers_current_year = [0]*12
+        job_offers_last_year = [0]*12
+        job_offers = self.db.query(JobOffer).all()
         for job_offer in job_offers:
             if job_offer.creationdate.year == current_year:
-                stats["job_offers_current_year"][job_offer.creationdate.month - 1] += 1
+                job_offers_current_year[job_offer.creationdate.month - 1] += 1
             elif job_offer.creationdate.year == last_year:
-                stats["job_offers_last_year"][job_offer.creationdate.month - 1] += 1
+                job_offers_last_year[job_offer.creationdate.month - 1] += 1
+        return job_offers_current_year, job_offers_last_year
 
+    def get_users_by_roles(self):
+        roles = self.db.query(Role).all()
+        users_by_roles = {}
+        for role in roles:
+            users_by_roles[role.name] = self.db.query(User).join(User.roles).filter(Role.name == role.name).count()
+        return users_by_roles
+
+    def get_user_statistics(self):
+        stats = {
+            "total_users": self.get_total_users(),
+            "new_users_last_month": self.get_new_users_last_month(),
+            "users_applied_to_jobs_count": self.get_users_applied_to_jobs_count(),
+            "users_by_roles": self.get_users_by_roles()
+        }
+        return stats
+
+    def get_job_statistics(self):
+        job_offers_current_year, job_offers_last_year = self.get_job_offers_by_year()
+        stats = {
+            "active_job_offers": self.get_active_job_offers(),
+            "total_job_offers": self.get_total_job_offers(),
+            "new_job_offers_last_month": self.get_new_job_offers_last_month(),
+            "total_companies": self.get_total_companies(),
+            "job_offers_current_year": job_offers_current_year,
+            "job_offers_last_year": job_offers_last_year
+        }
         return stats
