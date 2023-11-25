@@ -3,6 +3,7 @@ from config.db_config import get_db_connection
 from models.job_offer_model import JobOffer, JobOfferIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
+from fastapi import HTTPException
 
 class JobOfferController:
     def create_job_offer(job_offer: JobOfferIn):

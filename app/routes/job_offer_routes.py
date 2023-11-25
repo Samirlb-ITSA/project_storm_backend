@@ -1,34 +1,36 @@
 from fastapi import APIRouter, HTTPException, Depends
-from controllers.role_controller import *
+
+from controllers.job_offer_controller import JobOfferController
 from controllers.auth_controller import AuthController
-from models.user_model import RoleIn, User
+
+from models.job_offer_model import JobOfferIn, JobOffer
 
 router = APIRouter()
 
-new_role = RoleController()
+new_job_offer = JobOfferController()
 auth_controller = AuthController()
 
-@router.post("/create_role")
-async def create_role_routes(role: RoleIn, current_user: User = Depends(auth_controller.get_current_active_user)):
-    response = new_role.create_role(role)
+@router.post("/create_offer")
+async def create_offer_routes(job_offer: JobOfferIn, current_user: JobOffer = Depends(auth_controller.get_current_active_user)):
+    response = new_job_offer.create_job_offer(job_offer)
     return response
 
-@router.get("/get_role/{role_id}",response_model=RoleIn)
-async def get_role_routes(role_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
-    response = new_role.get_role(role_id)
+@router.get("/get_offer/{job_offer_id}",response_model=JobOfferIn)
+async def get_job_offer_routes(job_offer_id: int, current_user: JobOffer = Depends(auth_controller.get_current_active_user)):
+    response = new_job_offer.get_job_offer(job_offer_id)
     return response
 
-@router.get("/get_roles/")
-async def get_roles_routes(current_user: User = Depends(auth_controller.get_current_active_user)):
-    response = new_role.get_roles()
+@router.get("/get_job_offers/")
+async def get_job_offers(current_user: JobOffer = Depends(auth_controller.get_current_active_user)):
+    response = new_job_offer.get_job_offers()
     return response
 
-@router.put("/update_role")
-async def update_role_routes(role: RoleIn, current_user: User = Depends(auth_controller.get_current_active_user)):
-    response = new_role.update_role(role)
+@router.put("/update_job_offer")
+async def update_job_offer_routes(job_offer: JobOfferIn, current_user: JobOffer = Depends(auth_controller.get_current_active_user)):
+    response = new_job_offer.update_job_offer(job_offer)
     return response
 
-@router.delete("/delete_role/{role_id}")
-async def delete_role_routes(role_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
-    response = new_role.delete_role(role_id)
+@router.delete("/delete_job_offer/{job_offer_id}")
+async def delete_job_offer_routes(job_offer_id: int, current_user: JobOffer = Depends(auth_controller.get_current_active_user)):
+    response = new_job_offer.delete_job_offer(job_offer_id)
     return response

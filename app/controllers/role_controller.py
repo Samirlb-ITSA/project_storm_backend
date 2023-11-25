@@ -6,15 +6,16 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 
 class RoleController:
-    def create_role(role: RoleIn):
+    def create_role(self, role: RoleIn):
         db = get_db_connection()
         try:
-            db_role = Role(role.model_dump())
+            db_role = Role(**role.model_dump())
             db.add(db_role)
             db.commit()
             return {"resultado": "Rol creado"}
-        except SQLAlchemyError:
+        except SQLAlchemyError  as err:
             db.rollback()
+            print(f"Error de MySQL: {err}")
             return {"resultado": "Error al crear el rol"}
         finally:
             db.close()

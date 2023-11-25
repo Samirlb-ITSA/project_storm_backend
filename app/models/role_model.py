@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 from config.db_config import Base
 from pydantic import BaseModel
 from models.association_tables import rolexuser
+from typing import Optional
+
 class Role(Base):
     __tablename__ = "role"
 
@@ -13,5 +15,5 @@ class Role(Base):
     users = relationship("User", secondary=rolexuser, back_populates="roles")
 
 class RoleIn(BaseModel):
-    roleid: int
+    roleid: Optional[int] = None
     name: str
