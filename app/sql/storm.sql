@@ -1,117 +1,107 @@
--- Connect to your PostgreSQL database
-\c storm
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Create tables
-
+-- --------------------------------------------------------
+-- Table structure for table `users`
 CREATE TABLE users (
-  userid SERIAL PRIMARY KEY,
+  userid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   firstname VARCHAR(100) NOT NULL,
   lastname VARCHAR(100) NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
-  cellphone INTEGER NOT NULL,
+  cellphone VARCHAR(20) NOT NULL,
   address VARCHAR(100) NOT NULL,
   password VARCHAR(100) NOT NULL,
-  status SMALLINT NOT NULL,
+  status BOOLEAN NOT NULL,
   creationdate TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 
-INSERT INTO users (userid, firstname, lastname, email, cellphone, address, password, status, creationdate) VALUES
-(2, 'Juan', 'Evilla', 'juan.evilla', 320, 'bq', '123', 0, '2023-10-19 22:57:32'),
-(3, 'david', 'perez', 'david.perez', 320, 'bq', '123', 0, '2023-10-19 22:57:32'),
-(4, 'pepe', 'pepe', 'pepe', 320, 'bq', '123', 0, '2023-10-19 22:57:32'),
-(5, 'jua', 'jua', 'jua@@', 323232, 'bqbq', '123', 1, '2023-10-21 12:43:21'),
-(6, 'juanito', 'jua', 'jua@@uni', 323232, 'bqbq', '123', 1, '2023-10-21 12:43:40'),
-(8, 'juanito', 'evilla', 'jua@@uniba', 323232, 'bqbq', '123', 1, '2023-10-21 12:50:44'),
-(9, 'juan', 'evilla', 'jevilla@uni.com', 320, 'bq', '123', 1, '2023-10-26 21:28:47');
-
+-- --------------------------------------------------------
+-- Table structure for table `company`
 CREATE TABLE company (
-  companyid SERIAL PRIMARY KEY,
+  companyid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,
   cellphone INTEGER NOT NULL,
   address VARCHAR(100) NOT NULL,
   nit INTEGER NOT NULL,
-  status SMALLINT NOT NULL,
+  status BOOLEAN NOT NULL,
   creationdate TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 
-INSERT INTO company (companyid, name, email, cellphone, address, nit, status, creationdate) VALUES
-(1, 'Sykes', 'company@sykes.com', 333, 'bq', 0, 0, '2023-10-19 23:00:20'),
-(2, 'Movate', 'movate@', 444, 'bq', 1234, 0, '2023-10-20 22:24:04');
-
+-- --------------------------------------------------------
+-- Table structure for table `joboffers`
 CREATE TABLE joboffers (
-  offerid SERIAL PRIMARY KEY,
+  offerid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(100) NOT NULL,
   workday VARCHAR(100) NOT NULL,
-  status SMALLINT NOT NULL,
+  status BOOLEAN NOT NULL,
   creationdate TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  companyid INTEGER NOT NULL REFERENCES company(companyid) ON DELETE NO ACTION ON UPDATE NO ACTION
+  companyid UUID NOT NULL REFERENCES company(companyid) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
-INSERT INTO joboffers (offerid, name, workday, status, creationdate, companyid) VALUES
-(1, 'programming', 'fulltime', 0, '2023-10-20 21:48:34', 1),
-(10, 'accounting', 'parttime', 1, '2023-10-20 21:48:34', 1),
-(11, 'accounting', 'parttime', 1, '2023-10-20 21:49:23', 1),
-(16, 'networks', 'daytime', 1, '2023-10-20 22:02:43', 1),
-(17, 'admin', 'fulltime', 1, '2023-10-20 22:03:59', 1),
-(18, 'Employee', 'Continuous', 1, '2023-10-20 22:33:28', 2);
-
+-- --------------------------------------------------------
+-- Table structure for table `applicants`
 CREATE TABLE applicants (
-  applicantid SERIAL PRIMARY KEY,
-  offerid INTEGER NOT NULL REFERENCES joboffers(offerid) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  userid INTEGER NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION
+  applicantid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  offerid UUID NOT NULL REFERENCES joboffers(offerid) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  userid UUID NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
-INSERT INTO applicants (applicantid, offerid, userid) VALUES
-(1, 1, 2),
-(2, 1, 3);
-
+-- --------------------------------------------------------
+-- Table structure for table `attributes`
 CREATE TABLE attributes (
-  attributeid SERIAL PRIMARY KEY,
+  attributeid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(100) NOT NULL
 );
 
 -- --------------------------------------------------------
-
---
 -- Table structure for table `attributesxuser`
-
 CREATE TABLE attributesxuser (
-  attributesxuserid SERIAL PRIMARY KEY,
-  attributeid INTEGER NOT NULL REFERENCES attributes(attributeid) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  userid INTEGER NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  attributesxuserid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  attributeid UUID NOT NULL REFERENCES attributes(attributeid) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  userid UUID NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION,
   field VARCHAR(100) NOT NULL
 );
 
+-- --------------------------------------------------------
+-- Table structure for table `career`
 CREATE TABLE career (
-  careerid SERIAL PRIMARY KEY,
+  careerid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(100) NOT NULL
 );
 
-INSERT INTO career (careerid, name) VALUES
-(1, 'Ing Sistemas');
-
+-- --------------------------------------------------------
+-- Table structure for table `role`
 CREATE TABLE role (
-  roleid SERIAL PRIMARY KEY,
+  roleid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(100) NOT NULL
 );
 
-INSERT INTO role (roleid, name) VALUES
-(1, '0'),
-(2, 'teacher'),
-(3, 'graduate');
-
+-- --------------------------------------------------------
+-- Table structure for table `rolexuser`
 CREATE TABLE rolexuser (
-  rolexuserid SERIAL PRIMARY KEY,
-  userid INTEGER NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  roleid INTEGER NOT NULL REFERENCES role(roleid) ON DELETE NO ACTION ON UPDATE NO ACTION
+  rolexuserid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  userid UUID NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  roleid UUID NOT NULL REFERENCES role(roleid) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
-INSERT INTO rolexuser (rolexuserid, userid, roleid) VALUES
-(2, 8, 1);
-
+-- --------------------------------------------------------
+-- Table structure for table `userxcareer`
 CREATE TABLE userxcareer (
-  usercareerid SERIAL PRIMARY KEY,
-  userid INTEGER NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  careerid INTEGER NOT NULL REFERENCES career(careerid) ON DELETE NO ACTION ON UPDATE NO ACTION
+  usercareerid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  userid UUID NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  careerid UUID NOT NULL REFERENCES career(careerid) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
+
+-- Insert roles
+INSERT INTO role (roleid, name) VALUES
+('d6f414a0-1e8f-432c-a5f6-9dfa482b6142', 'Admin'),
+('a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d', 'Graduate'),
+('b1c2d3e4-5f6a-7b8c-9d0e-1f2a3b4c5d6e', 'Teacher');
+
+-- Insert user
+INSERT INTO users (userid, firstname, lastname, email, cellphone, address, password, status, creationdate) 
+VALUES ('e6f414a0-1e8f-432c-a5f6-9dfa482b6143', 'Samir', 'Lora', 'selora@unibarranquilla.edu.co', '3001234578', 'Cualquier lugar', '$2b$12$olcKBExeWfmrvsbbQbXYHuVaUuYLWOihoPwy4cfX0D7uMTT9gyVv2', TRUE, current_timestamp);
+
+-- Insert role for user
+INSERT INTO rolexuser (rolexuserid, userid, roleid) 
+VALUES ('f6a4b3c2-1d2e-3f4a-5b6c-7d8e9f0a1b2c', 'e6f414a0-1e8f-432c-a5f6-9dfa482b6143', 'd6f414a0-1e8f-432c-a5f6-9dfa482b6142');

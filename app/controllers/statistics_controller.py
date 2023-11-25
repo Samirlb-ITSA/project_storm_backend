@@ -55,13 +55,22 @@ class StatisticsController:
         for role in roles:
             users_by_roles[role.name] = self.db.query(User).join(User.roles).filter(Role.name == role.name).count()
         return users_by_roles
+    
+    def get_roles_count(self):
+        roles = self.db.query(Role).all()
+        roles_count = {}
+        for role in roles:
+            role_users_count = self.db.query(User).join(User.roles).filter(Role.roleid == role.roleid).count()
+            roles_count[role.name] = role_users_count
+        return roles_count
 
     def get_user_statistics(self):
         stats = {
             "total_users": self.get_total_users(),
             "new_users_last_month": self.get_new_users_last_month(),
             "users_applied_to_jobs_count": self.get_users_applied_to_jobs_count(),
-            "users_by_roles": self.get_users_by_roles()
+            "users_by_roles": self.get_users_by_roles(),
+            "roles_count": self.get_roles_count()
         }
         return stats
 
