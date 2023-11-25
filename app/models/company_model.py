@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Table, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import datetime
@@ -15,9 +15,9 @@ class Company(Base):
     cellphone = Column(Integer)
     address = Column(String)
     nit = Column(Integer)
-    status = Column(Integer)
+    status = Column(Boolean)
     creationdate = Column(DateTime)
-    
+
 
 class CompanyIn(BaseModel):
     #companyid: Optional[int] = None

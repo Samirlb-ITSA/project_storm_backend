@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Table, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from config.db_config import Base
 from pydantic import BaseModel
@@ -17,7 +17,7 @@ class User(Base):
     cellphone = Column(Integer)
     address = Column(String)
     password = Column(String)
-    status = Column(Integer)
+    status = Column(Boolean)
     creationdate = Column(DateTime)
 
     # Define the relationship with Role
@@ -39,7 +39,7 @@ class UserIn(BaseModel):
     cellphone: int
     address: str
     password: str
-    status: int
+    status: bool
     creationdate: datetime = datetime.now()
     roles: List[int] = []
     careers: List[int] = []

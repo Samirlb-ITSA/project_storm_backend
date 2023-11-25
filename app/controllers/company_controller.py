@@ -6,7 +6,9 @@ from sqlalchemy.exc import SQLAlchemyError
 
 class CompanyController:
     def create_company(self, company: CompanyIn):
+        print(company)
         db = get_db_connection()
+
         try:
             db_company = Company(**company.model_dump())
             db.add(db_company)

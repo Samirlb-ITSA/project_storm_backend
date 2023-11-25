@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import date
@@ -10,7 +10,7 @@ class JobOffer(Base):
     offerid = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     workday = Column(String)
-    status = Column(Integer)
+    status = Column(Boolean)
     creationdate = Column(DateTime)
     companyid = Column(Integer, ForeignKey('company.companyid'))
 

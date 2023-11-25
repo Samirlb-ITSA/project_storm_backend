@@ -21,6 +21,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class UserController:
     def create_user(self, user: UserIn):
         db = get_db_connection()
+        print(user)
         try:
             user.password = pwd_context.hash(user.password)
 
@@ -44,10 +45,10 @@ class UserController:
             print(db_user)
             db.commit()
             return {"result": "Usuario creado"}
-        except SQLAlchemyError:
+        except SQLAlchemyError as error:
             db.rollback()
             print("holi3")
-            print(SQLAlchemyError)
+            print(error)
             return {"result": "Error al crear el usuario"}
         finally:
             db.close()
