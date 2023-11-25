@@ -5,10 +5,14 @@ from models.user_model import RoleIn, User
 
 router = APIRouter()
 
-statistics_controller = StatisticsController()
 auth_controller = AuthController()
 
-@router.get("/statistics")
-async def get_statistics(user: User = Depends(auth_controller.get_current_active_user)):
-    response = statistics_controller.getStatistics()
-    return response
+@router.get("/statistics/user")
+async def get_user_statistics(user: User = Depends(auth_controller.get_current_active_user)):
+    statistics_controller = StatisticsController()
+    return statistics_controller.get_user_statistics()
+
+@router.get("/statistics/job")
+async def get_job_statistics(user: User = Depends(auth_controller.get_current_active_user)):
+    statistics_controller = StatisticsController()
+    return statistics_controller.get_job_statistics()
