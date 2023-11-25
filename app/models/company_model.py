@@ -1,15 +1,16 @@
-from sqlalchemy import Column, Integer, String, DateTime, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, UUID, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
+import uuid
 
 Base = declarative_base()
 
 class Company(Base):
     __tablename__ = "company"
 
-    companyid = Column(Integer, primary_key=True, index=True)
+    companyid = Column(UUID, primary_key=True, index=True, default = uuid.uuid4)
     name = Column(String)
     email = Column(String)
     cellphone = Column(Integer)
@@ -20,11 +21,10 @@ class Company(Base):
     
 
 class CompanyIn(BaseModel):
-    #companyid: Optional[int] = None
+    companyid: Optional[str] = None
     name: str
     email: str
     cellphone: int
     address: str
     nit: int
     creationdate: datetime = datetime.now()
-    #creationdate: datetime = datetime.now()

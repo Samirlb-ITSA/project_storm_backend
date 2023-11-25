@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, UUID, ForeignKey
 from sqlalchemy.orm import relationship
 from config.db_config import Base
 from pydantic import BaseModel
@@ -6,11 +6,12 @@ from typing import List
 from models.role_model import Role, RoleIn
 from datetime import datetime
 from models.association_tables import rolexuser, userxcareer, attributesxuser
+import uuid
 
 class User(Base):
     __tablename__ = "users"
 
-    userid = Column(Integer, primary_key=True, index=True)
+    userid = Column(UUID, primary_key=True, index=True, default = uuid.uuid4)
     firstname = Column(String)
     lastname = Column(String)
     email = Column(String)
