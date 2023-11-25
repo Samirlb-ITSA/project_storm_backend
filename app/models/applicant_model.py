@@ -1,18 +1,19 @@
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, UUID, ForeignKey
 from sqlalchemy.orm import relationship
 from config.db_config import Base
 from pydantic import BaseModel
+import uuid
 class Applicant(Base):
     __tablename__ = "applicants"
 
-    applicantid = Column(Integer, primary_key=True, index=True)
-    offerid = Column(Integer, ForeignKey('joboffers.offerid'))
-    userid = Column(Integer, ForeignKey('users.userid'))
+    applicantid = Column(UUID, primary_key=True, index=True, default = uuid.uuid4)
+    offerid = Column(UUID, ForeignKey('joboffers.offerid'))
+    userid = Column(UUID, ForeignKey('users.userid'))
 
     # Define the relationship with User
     # user = relationship("User", back_populates="applicants")
 
 class ApplicantIn(BaseModel):
-    applicantid: int
-    offerid: int
-    userid: int
+    applicantid: str
+    offerid: str
+    userid: str
