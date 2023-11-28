@@ -23,7 +23,6 @@ class UserController:
         db = get_db_connection()
         try:
             user.password = pwd_context.hash(user.password)
-
             db_user = User(**user.model_dump())
             for role_id in user.roles:
                 role = db.query(Role).get(role_id)
@@ -44,10 +43,9 @@ class UserController:
             print(db_user)
             db.commit()
             return {"result": "Usuario creado"}
-        except SQLAlchemyError:
+        except SQLAlchemyError as error:
             db.rollback()
-            print("holi3")
-            print(SQLAlchemyError)
+            print(error)
             return {"result": "Error al crear el usuario"}
         finally:
             db.close()

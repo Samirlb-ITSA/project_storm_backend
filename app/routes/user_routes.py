@@ -18,7 +18,7 @@ async def create_user(user: UserIn, current_user: User = Depends(auth_controller
     return response
 
 @router.get("/get_user/{user_id}",response_model=UserIn)
-async def get_user(user_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def get_user(user_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = await new_user.get_user(user_id)
     return response
 
