@@ -17,18 +17,22 @@ class StatisticsController:
         return self.db.query(User).count()
 
     def get_active_job_offers(self):
-        return self.db.query(JobOffer).filter(JobOffer.status == 1).count()
+        return self.db.query(JobOffer).filter(JobOffer.status == True).count()
 
     def get_total_job_offers(self):
         return self.db.query(JobOffer).count()
 
     def get_new_job_offers_last_month(self):
         one_month_ago = datetime.now() - timedelta(days=30)
-        return self.db.query(JobOffer).filter(JobOffer.status == 1, JobOffer.creationdate >= one_month_ago).count()
+        total_job_offers = self.db.query(JobOffer).count()
+        new_job_offers = self.db.query(JobOffer).filter(JobOffer.status == True, JobOffer.creationdate >= one_month_ago).count()
+        return (new_job_offers / total_job_offers) * 100 if total_job_offers else 0
 
     def get_new_users_last_month(self):
         one_month_ago = datetime.now() - timedelta(days=30)
-        return self.db.query(User).filter(User.creationdate >= one_month_ago).count()
+        total_users = self.db.query(User).count()
+        new_users = self.db.query(User).filter(User.creationdate >= one_month_ago).count()
+        return (new_users / total_users) * 100 if total_users else 0
 
     def get_users_applied_to_jobs_count(self):
         return self.db.query(User).join(Applicant, User.userid == Applicant.userid).distinct().count()

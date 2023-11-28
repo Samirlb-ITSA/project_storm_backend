@@ -7,7 +7,7 @@ class Applicant(Base):
     __tablename__ = "applicants"
 
     applicantid = Column(UUID, primary_key=True, index=True, default = uuid.uuid4)
-    offerid = Column(UUID, ForeignKey('joboffers.offerid'))
+    offerid = Column(UUID, ForeignKey('job_offers.offerid'))
     userid = Column(UUID, ForeignKey('users.userid'))
 
     # Define the relationship with User

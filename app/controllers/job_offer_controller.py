@@ -19,7 +19,7 @@ class JobOfferController:
         finally:
             db.close()
 
-    def get_job_offer(job_offer_id: int):
+    def get_job_offer(job_offer_id: str):
         db = get_db_connection()
         try:
             job_offer = db.query(JobOffer).filter(JobOffer.offerid == job_offer_id).first()
@@ -55,7 +55,7 @@ class JobOfferController:
         finally:
             db.close()
 
-    def delete_job_offer(job_offer_id: int):
+    def delete_job_offer(job_offer_id: str):
         db = get_db_connection()
         try:
             db_job_offer = db.query(JobOffer).filter(JobOffer.offerid == job_offer_id).first()
