@@ -16,3 +16,8 @@ async def get_user_statistics(user: User = Depends(auth_controller.get_current_a
 async def get_job_statistics(user: User = Depends(auth_controller.get_current_active_user)):
     statistics_controller = StatisticsController()
     return statistics_controller.get_job_statistics()
+
+@router.get("/statistics/company")
+async def get_company_statistics(user: User = Depends(auth_controller.get_current_active_user)):
+    statistics_controller = StatisticsController()
+    return statistics_controller.get_company_statistics()

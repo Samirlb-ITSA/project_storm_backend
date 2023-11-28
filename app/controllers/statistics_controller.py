@@ -19,6 +19,9 @@ class StatisticsController:
     def get_active_job_offers(self):
         return self.db.query(JobOffer).filter(JobOffer.status == True).count()
 
+    def get_companies(self):
+        return self.db.query(Company).limit(5).all()
+
     def get_total_job_offers(self):
         return self.db.query(JobOffer).count()
 
@@ -87,5 +90,11 @@ class StatisticsController:
             "total_companies": self.get_total_companies(),
             "job_offers_current_year": job_offers_current_year,
             "job_offers_last_year": job_offers_last_year
+        }
+        return stats
+
+    def get_company_statistics(self):
+        stats = {
+            "companies": self.get_companies(),
         }
         return stats
