@@ -50,7 +50,7 @@ class UserController:
         finally:
             db.close()
 
-    def get_user(self, user_id: int):
+    def get_user(self, user_id: str):
         db = get_db_connection()
         try:
             user = db.query(User).options(joinedload(User.roles), joinedload(User.careers), joinedload(User.attributes)).filter(User.userid == user_id).first()

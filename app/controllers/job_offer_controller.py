@@ -3,7 +3,6 @@ from config.db_config import get_db_connection
 from models.job_offer_model import JobOffer, JobOfferIn
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import HTTPException
 
 class JobOfferController:
     def create_job_offer(job_offer: JobOfferIn):
@@ -13,28 +12,28 @@ class JobOfferController:
             db.add(db_job_offer)
             db.commit()
             return {"resultado": "Oferta creada"}
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
             db.rollback()
-            return {"resultado": "Error al crear la oferta"}
+            raise HTTPException(status_code=500, detail=str(e))
         finally:
             db.close()
 
-    def get_job_offer(job_offer_id: str):
+    def get_job_offer(self, job_offer_id: str):
         db = get_db_connection()
         try:
             job_offer = db.query(JobOffer).filter(JobOffer.offerid == job_offer_id).first()
             if job_offer is None:
-                raise HTTPException(status_code=404, detail="Oferta no encontrada")
+                return {"resultado": "Oferta no encontrada"}
             return jsonable_encoder(job_offer)
         finally:
             db.close()
 
-    def get_job_offers():
+    def get_job_offers(self):
         db = get_db_connection()
         try:
             job_offers = db.query(JobOffer).all()
             if not job_offers:
-                raise HTTPException(status_code=404, detail="No se encontraron ofertas")
+                return {"resultado": "No se encontraron ofertas"}
             return {"resultado": jsonable_encoder(job_offers)}
         finally:
             db.close()
@@ -49,9 +48,9 @@ class JobOfferController:
                 setattr(db_job_offer, var, value) if value else None
             db.commit()
             return {"resultado": "Oferta actualizada"}
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
             db.rollback()
-            return {"resultado": "Error al actualizar la oferta"}
+            raise HTTPException(status_code=500, detail=str(e))
         finally:
             db.close()
 
@@ -64,8 +63,8 @@ class JobOfferController:
             db.delete(db_job_offer)
             db.commit()
             return {"resultado": "Oferta eliminada"}
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
             db.rollback()
-            return {"resultado": "Error al eliminar la oferta"}
+            raise HTTPException(status_code=500, detail=str(e))
         finally:
             db.close()

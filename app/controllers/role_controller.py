@@ -15,12 +15,12 @@ class RoleController:
             return {"resultado": "Rol creado"}
         except SQLAlchemyError  as err:
             db.rollback()
-            print(f"Error de MySQL: {err}")
+            print("Error de MySQL: {err}")
             return {"resultado": "Error al crear el rol"}
         finally:
             db.close()
 
-    def get_role(role_id: int):
+    def get_role(self, role_id: str):
         db = get_db_connection()
         try:
             role = db.query(Role).options(joinedload(Role.users)).filter(Role.roleid == role_id).first()
@@ -37,10 +37,13 @@ class RoleController:
             if not roles:
                 raise HTTPException(status_code=404, detail="No se encontraron roles")
             return {"resultado": jsonable_encoder(roles)}
+        except SQLAlchemyError  as err:
+            db.rollback()
+            print("Error de MySQL: {err}")
         finally:
             db.close()
 
-    def update_role(role: RoleIn):
+    def update_role(self, role: RoleIn):
         db = get_db_connection()
         try:
             db_role = db.query(Role).filter(Role.roleid == role.roleid).first()
@@ -56,7 +59,7 @@ class RoleController:
         finally:
             db.close()
 
-    def delete_role(role_id: int):
+    def delete_role(self, role_id: str):
         db = get_db_connection()
         try:
             db_role = db.query(Role).filter(Role.roleid == role_id).first()
