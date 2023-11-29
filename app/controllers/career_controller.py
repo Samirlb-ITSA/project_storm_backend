@@ -22,7 +22,7 @@ class CareerController:
     def get_career(self, career_id: str):
         db = get_db_connection()
         try:
-            career = db.query(Career).options(joinedload(Career.users)).filter(Career.careerid == career_id).first()
+            career = db.query(Career).options(joinedload(Career.faculty)).filter(Career.careerid == career_id).first()
             if career is None:
                 raise HTTPException(status_code=404, detail="Carrera no encontrada")
             return jsonable_encoder(career)
@@ -32,7 +32,7 @@ class CareerController:
     def get_careers(self):
         db = get_db_connection()
         try:
-            careers = db.query(Career).options(joinedload(Career.users)).all()
+            careers = db.query(Career).options(joinedload(Career.faculty)).all()
             if not careers:
                 raise HTTPException(status_code=404, detail="No se encontraron carreras")
             return {"resultado": jsonable_encoder(careers)}

@@ -22,25 +22,29 @@ class UserController:
     def create_user(self, user: UserIn):
         db = get_db_connection()
         try:
-            user.password = pwd_context.hash(user.password)
+            # Crear copias de roles y carreras
+            roles_in = user.roles
+            careers_in = user.careers
+
+            # Vaciar roles y carreras en UserIn
+            user.roles = []
+            user.careers = []
+
+            # Crear un nuevo objeto User
             db_user = User(**user.model_dump())
-            for role_id in user.roles:
-                role = db.query(Role).get(role_id)
+
+            # Asignar los roles y carreras
+            for rol in roles_in:
+                role = db.query(Role).get(rol.roleid)
                 if role is not None:
                     db_user.roles.append(role)
 
-            for career_id in user.careers:
-                career = db.query(Career).get(career_id)
+            for career in careers_in:
+                career = db.query(Career).get(career.careerid)
                 if career is not None:
                     db_user.careers.append(career)
 
-            # for attribute_id in user:
-            #     attribute = db.query(Attribute).get(attribute_id)
-            #     if attribute is not None:
-            #         db_user.attributes.append(attribute)
-
             db.add(db_user)
-            print(db_user)
             db.commit()
             return {"result": "Usuario creado"}
         except SQLAlchemyError as error:

@@ -20,4 +20,4 @@ class JobOfferIn(BaseModel):
     name: str
     workday: str
     status: bool
-    companyid: int
+    companyid: str
