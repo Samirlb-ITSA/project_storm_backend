@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import SQLAlchemyError
 
 class JobOfferController:
-    def create_job_offer(job_offer: JobOfferIn):
+    def create_job_offer(self, job_offer: JobOfferIn):
         db = get_db_connection()
         try:
             db_job_offer = JobOffer(job_offer.model_dump())
@@ -38,7 +38,7 @@ class JobOfferController:
         finally:
             db.close()
 
-    def update_job_offer(job_offer: JobOfferIn):
+    def update_job_offer(self, job_offer: JobOfferIn):
         db = get_db_connection()
         try:
             db_job_offer = db.query(JobOffer).filter(JobOffer.offerid == job_offer.offerid).first()
@@ -54,7 +54,7 @@ class JobOfferController:
         finally:
             db.close()
 
-    def delete_job_offer(job_offer_id: str):
+    def delete_job_offer(self, job_offer_id: str):
         db = get_db_connection()
         try:
             db_job_offer = db.query(JobOffer).filter(JobOffer.offerid == job_offer_id).first()

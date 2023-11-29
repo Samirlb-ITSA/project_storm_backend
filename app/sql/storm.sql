@@ -73,6 +73,7 @@ CREATE TABLE faculties (
 -- Table structure for table `career`
 CREATE TABLE career (
   careerid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  status BOOLEAN NOT NULL,
   name VARCHAR(100) NOT NULL,
   facultyid UUID NOT NULL REFERENCES faculties(facultyid) ON DELETE NO ACTION ON UPDATE NO ACTION
 );

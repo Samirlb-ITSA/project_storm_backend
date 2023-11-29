@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, UUID, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, UUID, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import datetime
@@ -16,7 +16,7 @@ class Company(Base):
     cellphone = Column(Integer)
     address = Column(String)
     nit = Column(Integer)
-    status = Column(Integer)
+    status = Column(Boolean)
     creationdate = Column(DateTime)
     
 
@@ -26,5 +26,6 @@ class CompanyIn(BaseModel):
     email: str
     cellphone: int
     address: str
+    status: bool
     nit: int
     creationdate: datetime = datetime.now()

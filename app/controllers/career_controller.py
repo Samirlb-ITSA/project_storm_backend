@@ -19,7 +19,7 @@ class CareerController:
         finally:
             db.close()
 
-    def get_career(career_id: int):
+    def get_career(self, career_id: str):
         db = get_db_connection()
         try:
             career = db.query(Career).options(joinedload(Career.users)).filter(Career.careerid == career_id).first()
@@ -29,7 +29,7 @@ class CareerController:
         finally:
             db.close()
 
-    def get_careers():
+    def get_careers(self):
         db = get_db_connection()
         try:
             careers = db.query(Career).options(joinedload(Career.users)).all()
@@ -39,7 +39,7 @@ class CareerController:
         finally:
             db.close()
 
-    def update_career(career: CareerIn):
+    def update_career(self, career: CareerIn):
         db = get_db_connection()
         try:
             db_career = db.query(Career).filter(Career.careerid == career.careerid).first()
@@ -55,7 +55,7 @@ class CareerController:
         finally:
             db.close()
 
-    def delete_career(career_id: int):
+    def delete_career(self, career_id: str):
         db = get_db_connection()
         try:
             db_career = db.query(Career).filter(Career.careerid == career_id).first()
