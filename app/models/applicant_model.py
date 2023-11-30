@@ -14,6 +14,5 @@ class Applicant(Base):
     # user = relationship("User", back_populates="applicants")
 
 class ApplicantIn(BaseModel):
-    applicantid: str
     offerid: str
     userid: str
