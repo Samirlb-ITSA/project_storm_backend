@@ -31,6 +31,7 @@ class UserController:
             user.careers = []
 
             # Crear un nuevo objeto User
+            user.password = pwd_context.hash(user.password)
             db_user = User(**user.model_dump())
 
             # Asignar los roles y carreras
