@@ -8,7 +8,8 @@ class JobOfferController:
     def create_job_offer(self, job_offer: JobOfferIn):
         db = get_db_connection()
         try:
-            db_job_offer = JobOffer(job_offer.model_dump())
+            db_job_offer = JobOffer(**job_offer.model_dump())
+            print(db_job_offer)
             db.add(db_job_offer)
             db.commit()
             return {"resultado": "Oferta creada"}

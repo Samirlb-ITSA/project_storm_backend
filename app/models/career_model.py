@@ -21,7 +21,6 @@ class Career(Base):
     users = relationship("User", secondary=userxcareer, back_populates="careers")
 
 class CareerIn(BaseModel):
-    careerid: str
     name: str
     status: bool
-    faculty: str
+    facultyid: str

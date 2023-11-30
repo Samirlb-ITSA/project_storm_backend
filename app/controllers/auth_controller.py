@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from models.user_model import User
+from models.role_model import RoleIn
 from routes.user_routes import UserController
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
@@ -32,8 +34,9 @@ class AuthController:
     async def authenticate(self, form_data: OAuth2PasswordRequestForm = Depends()):
         user = self.authenticate_user(users, form_data.username, form_data.password)
         access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
+        role_in_list = jsonable_encoder([RoleIn(roleid=str(role.roleid), name=role.name) for role in user.roles])
         access_token = self.create_access_token(
-            data={"id": str(user.userid), "first_name": user.firstname, "last_name": user.lastname}, expires_delta=access_token_expires
+            data={"id": str(user.userid), "first_name": user.firstname, "last_name": user.lastname, "roles": role_in_list}, expires_delta=access_token_expires
         )
         return {"access_token": access_token, "token_type": "bearer"}
 

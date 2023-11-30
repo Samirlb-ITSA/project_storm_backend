@@ -2,6 +2,9 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UUID, Bool
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import date
+from typing import Optional
+from models.company_model import Company
+from datetime import datetime
 import uuid
 
 Base = declarative_base()
@@ -12,11 +15,10 @@ class JobOffer(Base):
     name = Column(String)
     workday = Column(String)
     status = Column(Boolean)
-    creationdate = Column(DateTime)
-    companyid = Column(Integer, ForeignKey('company.companyid'))
+    creationdate = Column(DateTime, default=datetime.now)
+    companyid = Column(UUID, ForeignKey(Company.companyid))
 
 class JobOfferIn(BaseModel):
-    offerid: str
     name: str
     workday: str
     status: bool

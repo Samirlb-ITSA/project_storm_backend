@@ -10,8 +10,8 @@ router = APIRouter()
 new_job_offer = JobOfferController()
 auth_controller = AuthController()
 
-@router.post("/create_offer")
-async def create_offer_routes(job_offer: JobOfferIn, current_user: JobOffer = Depends(auth_controller.get_current_active_user)):
+@router.post("/create_job_offer")
+async def create_job_offer_routes(job_offer: JobOfferIn, current_user: JobOffer = Depends(auth_controller.get_current_active_user)):
     response = new_job_offer.create_job_offer(job_offer)
     return response
 

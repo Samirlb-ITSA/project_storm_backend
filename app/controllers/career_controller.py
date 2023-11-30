@@ -6,10 +6,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 
 class CareerController:
-    def create_career(career: CareerIn):
+    def create_career(self, career: CareerIn):
         db = get_db_connection()
         try:
-            db_career = Career(career.model_dump())
+            db_career = Career(**career.model_dump())
             db.add(db_career)
             db.commit()
             return {"resultado": "Carrera creada"}
