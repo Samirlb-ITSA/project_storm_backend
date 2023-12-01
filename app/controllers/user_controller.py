@@ -104,7 +104,7 @@ class UserController:
         finally:
             db.close()
 
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: str):
         db = get_db_connection()
         try:
             db_user = db.query(User).filter(User.userid == user_id).first()
