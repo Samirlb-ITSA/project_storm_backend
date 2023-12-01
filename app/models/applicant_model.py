@@ -6,9 +6,12 @@ import uuid
 class Applicant(Base):
     __tablename__ = "applicants"
 
-    applicantid = Column(UUID, primary_key=True, index=True, default = uuid.uuid4)
-    offerid = Column(UUID, ForeignKey('job_offers.offerid'))
-    userid = Column(UUID, ForeignKey('users.userid'))
+    applicantid = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    offerid = Column(UUID(as_uuid=True), ForeignKey('job_offers.offerid'))
+    userid = Column(UUID(as_uuid=True), ForeignKey('users.userid'))
+
+    # Define the relationship with JobOffer
+    job_offer = relationship("JobOffer", back_populates="applicants")
 
     # Define the relationship with User
     # user = relationship("User", back_populates="applicants")
