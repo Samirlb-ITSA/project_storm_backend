@@ -16,7 +16,7 @@ class JobOffer(Base):
     workday = Column(String(100), nullable=False)
     status = Column(Boolean, nullable=False)
     creationdate = Column(DateTime, default=datetime.now)
-    companyid = Column(UUID(as_uuid=True), ForeignKey('company.companyid'))
+    companyid = Column(UUID(as_uuid=True), ForeignKey(Company.companyid))
 
     # Define the relationship with Applicant
     applicants = relationship("Applicant", back_populates="job_offer")
