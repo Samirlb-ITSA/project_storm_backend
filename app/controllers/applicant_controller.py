@@ -6,10 +6,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 
 class ApplicantController:
-    def create_applicant(applicant: ApplicantIn):
+    def create_applicant(self, applicant: ApplicantIn):
         db = get_db_connection()
         try:
-            db_applicant = Applicant(applicant.model_dump())
+            db_applicant = Applicant(**applicant.model_dump())
             db.add(db_applicant)
             db.commit()
             return {"resultado": "Aplicante creado"}
@@ -19,27 +19,27 @@ class ApplicantController:
         finally:
             db.close()
 
-    def get_applicant(applicant_id: int):
+    def get_applicant(self, applicant_id: str):
         db = get_db_connection()
         try:
-            applicant = db.query(Applicant).options(joinedload(Applicant.user)).filter(Applicant.applicantid == applicant_id).first()
+            applicant = db.query(Applicant).options(joinedload(Applicant.job_offer)).filter(Applicant.applicantid == applicant_id).first()
             if applicant is None:
                 raise HTTPException(status_code=404, detail="Aplicante not found")
             return jsonable_encoder(applicant)
         finally:
             db.close()
 
-    def get_applicants():
+    def get_applicants(self):
         db = get_db_connection()
         try:
-            applicants = db.query(Applicant).options(joinedload(Applicant.user)).all()
+            applicants = db.query(Applicant).options(joinedload(Applicant.job_offer)).all()
             if not applicants:
                 raise HTTPException(status_code=404, detail="No aplicantes found")
             return {"resultado": jsonable_encoder(applicants)}
         finally:
             db.close()
 
-    def update_applicant(applicant: ApplicantIn):
+    def update_applicant(self, applicant: ApplicantIn):
         db = get_db_connection()
         try:
             db_applicant = db.query(Applicant).filter(Applicant.applicantid == applicant.applicantid).first()
@@ -55,7 +55,7 @@ class ApplicantController:
         finally:
             db.close()
 
-    def delete_applicant(applicant_id: int):
+    def delete_applicant(self, applicant_id: str):
         db = get_db_connection()
         try:
             db_applicant = db.query(Applicant).filter(Applicant.applicantid == applicant_id).first()

@@ -33,7 +33,7 @@ async def update_user(user: UserIn, current_user: User = Depends(auth_controller
     return response
 
 @router.delete("/delete_user/{user_id}")
-async def delete_user(user_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def delete_user(user_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_user.delete_user(user_id)
     return response
 

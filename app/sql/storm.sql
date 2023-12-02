@@ -18,8 +18,8 @@ CREATE TABLE users (
 -- Table structure for table `company`
 CREATE TABLE company (
   companyid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(100) NOT NULL,
-  email VARCHAR(100) NOT NULL,
+  name VARCHAR(100) UNIQUE NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
   cellphone INTEGER NOT NULL,
   address VARCHAR(100) NOT NULL,
   nit INTEGER NOT NULL,
@@ -43,14 +43,14 @@ CREATE TABLE job_offers (
 CREATE TABLE applicants (
   applicantid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   offerid UUID NOT NULL REFERENCES job_offers(offerid) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  userid UUID NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION
+  userid UUID UNIQUE NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 -- --------------------------------------------------------
 -- Table structure for table `attributes`
 CREATE TABLE attributes (
   attributeid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(100) NOT NULL
+  name VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -66,14 +66,15 @@ CREATE TABLE attributes_user (
 -- Table structure for table `faculties`
 CREATE TABLE faculties (
   facultyid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(100) NOT NULL
+  name VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- --------------------------------------------------------
 -- Table structure for table `career`
 CREATE TABLE career (
   careerid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(100) NOT NULL,
+  status BOOLEAN NOT NULL,
+  name VARCHAR(100) UNIQUE NOT NULL,
   facultyid UUID NOT NULL REFERENCES faculties(facultyid) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -81,7 +82,7 @@ CREATE TABLE career (
 -- Table structure for table `role`
 CREATE TABLE role (
   roleid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(100) NOT NULL
+  name VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- --------------------------------------------------------

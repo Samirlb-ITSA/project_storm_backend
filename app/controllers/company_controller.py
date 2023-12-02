@@ -20,7 +20,7 @@ class CompanyController:
         finally:
             db.close()
 
-    def get_company(company_id: int):
+    def get_company(self, company_id: str):
         db = get_db_connection()
         try:
             company = db.query(Company).filter(Company.companyid == company_id).first()
@@ -40,7 +40,7 @@ class CompanyController:
         finally:
             db.close()
 
-    def update_company(company: CompanyIn):
+    def update_company(self, company: CompanyIn):
         db = get_db_connection()
         try:
             db_company = db.query(Company).filter(Company.companyid == company.companyid).first()
@@ -56,7 +56,7 @@ class CompanyController:
         finally:
             db.close()
 
-    def delete_company(company_id: int):
+    def delete_company(self, company_id: str):
         db = get_db_connection()
         try:
             db_company = db.query(Company).filter(Company.companyid == company_id).first()
