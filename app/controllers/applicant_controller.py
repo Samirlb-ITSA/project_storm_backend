@@ -13,9 +13,10 @@ class ApplicantController:
             db.add(db_applicant)
             db.commit()
             return {"resultado": "Aplicante creado"}
-        except SQLAlchemyError:
+        except SQLAlchemyError as error:
+            print(str(error.orig))
             db.rollback()
-            return {"resultado": "Error al crear el aplicante"}
+            return HTTPException(status_code=500, resultado="Error al crear el aplicante")
         finally:
             db.close()
 

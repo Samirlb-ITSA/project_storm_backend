@@ -43,7 +43,7 @@ CREATE TABLE job_offers (
 CREATE TABLE applicants (
   applicantid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   offerid UUID NOT NULL REFERENCES job_offers(offerid) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  userid UUID UNIQUE NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION
+  userid UUID NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 -- --------------------------------------------------------
@@ -109,8 +109,8 @@ CREATE TABLE history_status (
 );
 
 -- --------------------------------------------------------
--- Table structure for table `joboffer_history`
-CREATE TABLE joboffer_history (
+-- Table structure for table `job_offer_history`
+CREATE TABLE job_offer_history (
   historyid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   offerid UUID NOT NULL REFERENCES job_offers(offerid) ON DELETE NO ACTION ON UPDATE NO ACTION,
   userid UUID NOT NULL REFERENCES users(userid) ON DELETE NO ACTION ON UPDATE NO ACTION,
