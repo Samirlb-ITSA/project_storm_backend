@@ -8,6 +8,7 @@ from routes.applicant_routes import router as aplicante_router
 from routes.auth_routes import router as auth_router
 from routes.statistics_routes import router as statistics_router
 from routes.faculty_routes import router as faculty_router
+from routes.report_routes import router as report_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -34,6 +35,7 @@ app.include_router(ofertas_router)
 app.include_router(aplicante_router)
 app.include_router(statistics_router)
 app.include_router(faculty_router)
+app.include_router(report_router)
 
 if __name__ == "__main__":
     import uvicorn

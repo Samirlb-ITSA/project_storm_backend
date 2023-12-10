@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reporte de Estadísticas</title>
+</head>
+<body>
+    <h1>Reporte de Estadísticas</h1>
+
+    <h2>Estadísticas de Usuarios</h2>
+    <ul>
+        <li>Total de Usuarios: {{ user_stats.total_users }}</li>
+        <li>Nuevos Usuarios el Mes Pasado: {{ user_stats.new_users_last_month }}</li>
+        <li>Usuarios que Han Aplicado a Trabajos: {{ user_stats.users_applied_to_jobs_count }}</li>
+        <li>Usuarios por Roles: 
+            <ul>
+            {% for role, count in user_stats.users_by_roles.items() %}
+                <li>{{ role }}: {{ count }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+        <li>Conteo de Roles: 
+            <ul>
+            {% for role, count in user_stats.roles_count.items() %}
+                <li>{{ role }}: {{ count }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Estadísticas de Trabajos</h2>
+    <ul>
+        <li>Ofertas de Trabajo Activas: {{ job_stats.active_job_offers }}</li>
+        <li>Total de Ofertas de Trabajo: {{ job_stats.total_job_offers }}</li>
+        <li>Nuevas Ofertas de Trabajo el Mes Pasado: {{ job_stats.new_job_offers_last_month }}</li>
+        <li>Total de Empresas: {{ job_stats.total_companies }}</li>
+        <li>Ofertas de Trabajo del Año Actual: 
+            <ul>
+            {% for count in job_stats.job_offers_current_year %}
+                <li>Mes {{ loop.index }}: {{ count }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+        <li>Ofertas de Trabajo del Año Pasado: 
+            <ul>
+            {% for count in job_stats.job_offers_last_year %}
+                <li>Mes {{ loop.index }}: {{ count }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Estadísticas de Empresas</h2>
+    <ul>
+        <li>Empresas: 
+            <ul>
+            {% for company in company_stats.companies %}
+                <li>{{ company.name }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+    </ul>
+</body>
+</html>
