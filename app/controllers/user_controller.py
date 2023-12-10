@@ -28,8 +28,6 @@ class UserController:
         db = get_db_connection()
         print(user)
         try:
-            password=user.password
-            user.password = pwd_context.hash(user.password)
             # Crear copias de roles y carreras
             roles_in = user.roles
             careers_in = user.careers
@@ -39,6 +37,7 @@ class UserController:
             user.careers = []
 
             # Crear un nuevo objeto User
+            password=user.password
             user.password = pwd_context.hash(user.password)
             db_user = User(**user.model_dump())
 
