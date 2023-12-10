@@ -21,6 +21,8 @@ pip install SQLAlchemy
 pip install psycopg2-binary
 pip install pandas
 pip install openpyxl
+pip install xhtml2pdf
+pip install jinja2
 
 // Delete cache on MacOs
 find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf (on MacOs)

@@ -14,7 +14,7 @@ async def create_role(role: RoleIn, current_user: User = Depends(auth_controller
     return response
 
 @router.get("/get_role/{role_id}",response_model=RoleIn)
-async def get_role(role_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def get_role(role_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_role.get_role(role_id)
     return response
 
@@ -29,6 +29,6 @@ async def update_role(role: RoleIn, current_user: User = Depends(auth_controller
     return response
 
 @router.delete("/delete_role/{role_id}")
-async def delete_role(role_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def delete_role(role_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_role.delete_role(role_id)
     return response

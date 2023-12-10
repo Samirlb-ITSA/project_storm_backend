@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from models.user_model import User
+from models.role_model import RoleIn
 from routes.user_routes import UserController
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
@@ -32,16 +34,20 @@ class AuthController:
     async def authenticate(self, form_data: OAuth2PasswordRequestForm = Depends()):
         user = self.authenticate_user(users, form_data.username, form_data.password)
         access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
+        role_in_list = jsonable_encoder([RoleIn(roleid=str(role.roleid), name=role.name) for role in user.roles])
         access_token = self.create_access_token(
-            data={"sub": user.email}, expires_delta=access_token_expires
+            data={"id": str(user.userid), "first_name": user.firstname, "last_name": user.lastname, "roles": role_in_list}, expires_delta=access_token_expires
         )
         return {"access_token": access_token, "token_type": "bearer"}
 
-    def get_user(self, db, username):
-        return next((user for user in db if user.email == username), [])
+    def get_user(self, db, userid):
+        return next((user for user in db if str(user.userid) == userid), [])
 
-    def authenticate_user(self, db, username, password):
-        user = self.get_user(db, username)
+    def get_user_form_email(self, db, email):
+        return next((user for user in db if user.email == email), [])
+
+    def authenticate_user(self, db, email, password):
+        user = self.get_user_form_email(db, email)
         if not user:
             raise HTTPException(status_code = 401, detail= "Could not validate credentials", headers={"WWW-Autenticate": "Bearer"})
         if not self.verify_password(password, user.password):
@@ -68,18 +74,18 @@ class AuthController:
         )
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username: str = payload.get("sub")
-            if username is None:
+            userid: str = payload.get("id")
+            if userid is None:
                 raise credentials_exception
         except JWTError:
             raise credentials_exception
-        user = self.get_user(users, username)
+        user = self.get_user(users, userid)
         if user is None:
             raise credentials_exception
         return user
 
     async def get_current_active_user(self, token: str = Depends(oauth2_scheme)):
         current_user = await self.get_current_user(token)
-        if current_user.status == 0 :
+        if current_user.status == False :
             raise HTTPException(status_code=400, detail="Inactive user")
         return current_user

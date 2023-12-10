@@ -3,3 +3,5 @@ project_storm_backend/
 .vscode
 
 .env
+
+app/report.pdf

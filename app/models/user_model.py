@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, String, DateTime, UUID, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from config.db_config import Base
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
 from typing import List
 from models.role_model import Role, RoleIn
+from models.career_model import CareerIn
 from datetime import datetime
 from models.association_tables import rolexuser, userxcareer, attributesxuser
 import uuid
@@ -42,6 +43,6 @@ class UserIn(BaseModel):
     password: str
     status: bool
     creationdate: datetime = datetime.now()
-    roles: List[int] = []
-    careers: List[int] = []
+    roles: List[RoleIn] = []
+    careers: List[CareerIn] = []
     # attributes: List[int] = []
