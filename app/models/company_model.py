@@ -27,4 +27,5 @@ class CompanyIn(BaseModel):
     cellphone: int
     address: str
     nit: int
+    status: bool
     creationdate: datetime = datetime.now()

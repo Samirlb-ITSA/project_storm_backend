@@ -5,6 +5,7 @@ from models.user_model import UserIn, User
 from models.role_model import Role
 from models.career_model import Career
 from models.attribute_model import Attribute
+from controllers.email_controller import send_email
 
 from models.login_model import Login
 from fastapi.encoders import jsonable_encoder
@@ -12,6 +13,8 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from passlib.context import CryptContext
 
@@ -19,10 +22,13 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class UserController:
-    def create_user(self, user: UserIn):
+
+
+    async def create_user(self, user: UserIn):
         db = get_db_connection()
         print(user)
         try:
+            password=user.password
             user.password = pwd_context.hash(user.password)
 
             db_user = User(**user.model_dump())
@@ -44,6 +50,8 @@ class UserController:
             db.add(db_user)
             print(db_user)
             db.commit()
+            error=await send_email(user.email, "Bienvenido Usuario!", password)
+            print(error)
             return {"result": "Usuario creado"}
         except SQLAlchemyError as error:
             db.rollback()

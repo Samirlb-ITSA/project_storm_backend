@@ -23,7 +23,7 @@ class RoleController:
     def get_role(role_id: int):
         db = get_db_connection()
         try:
-            role = db.query(Role).options(joinedload(Role.users)).filter(Role.roleid == role_id).first()
+            role = db.query(Role).filter(Role.roleid == role_id).first()
             if role is None:
                 raise HTTPException(status_code=404, detail="Rol no encontrado")
             return jsonable_encoder(role)
@@ -33,7 +33,7 @@ class RoleController:
     def get_roles(self):
         db = get_db_connection()
         try:
-            roles = db.query(Role).options(joinedload(Role.users)).all()
+            roles = db.query(Role).all()
             if not roles:
                 raise HTTPException(status_code=404, detail="No se encontraron roles")
             return {"resultado": jsonable_encoder(roles)}

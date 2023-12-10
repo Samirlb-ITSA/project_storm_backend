@@ -15,7 +15,7 @@ async def create_company(company: CompanyIn, current_user: User = Depends(auth_c
     return response
 
 @router.get("/get_company/{company_id}",response_model=CompanyIn)
-async def get_company(company_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def get_company(company_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_company.get_company(company_id)
     return response
 

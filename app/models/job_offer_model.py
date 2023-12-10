@@ -6,7 +6,7 @@ import uuid
 
 Base = declarative_base()
 class JobOffer(Base):
-    __tablename__ = "joboffers"
+    __tablename__ = "job_offers"
 
     offerid = Column(UUID, primary_key=True, index=True, default = uuid.uuid4)
     name = Column(String)

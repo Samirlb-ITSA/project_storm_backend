@@ -14,7 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 @router.post("/create_user")
 async def create_user(user: UserIn, current_user: User = Depends(auth_controller.get_current_active_user)):
-    response = new_user.create_user(user)
+    response = await new_user.create_user(user)
     return response
 
 @router.get("/get_user/{user_id}",response_model=UserIn)

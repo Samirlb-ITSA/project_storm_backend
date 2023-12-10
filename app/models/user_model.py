@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, UUID, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, UUID, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from config.db_config import Base
 from pydantic import BaseModel

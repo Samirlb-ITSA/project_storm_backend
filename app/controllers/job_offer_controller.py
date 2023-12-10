@@ -29,7 +29,7 @@ class JobOfferController:
         finally:
             db.close()
 
-    def get_job_offers():
+    def get_job_offers(self):
         db = get_db_connection()
         try:
             job_offers = db.query(JobOffer).all()
