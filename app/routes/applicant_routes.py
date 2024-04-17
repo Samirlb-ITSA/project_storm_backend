@@ -15,7 +15,7 @@ async def create_applicant(applicant: ApplicantIn, current_user: User = Depends(
     return response
 
 @router.get("/get_applicant/{applicant_id}",response_model=ApplicantIn)
-async def get_applicant(applicant_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def get_applicant(applicant_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_applicant.get_applicant(applicant_id)
     return response
 
@@ -30,6 +30,6 @@ async def update_applicant(applicant: ApplicantIn, current_user: User = Depends(
     return response
 
 @router.delete("/delete_applicant/{applicant_id}")
-async def delete_applicant(applicant_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def delete_applicant(applicant_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_applicant.delete_applicant(applicant_id)
     return response

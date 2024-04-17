@@ -15,7 +15,7 @@ async def create_career(career: CareerIn, current_user: User = Depends(auth_cont
     return response
 
 @router.get("/get_career/{career_id}",response_model=CareerIn)
-async def get_career(career_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def get_career(career_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_career.get_career(career_id)
     return response
 
@@ -30,6 +30,6 @@ async def update_career(career: CareerIn, current_user: User = Depends(auth_cont
     return response
 
 @router.delete("/delete_career/{career_id}")
-async def delete_career(career_id: int, current_user: User = Depends(auth_controller.get_current_active_user)):
+async def delete_career(career_id: str, current_user: User = Depends(auth_controller.get_current_active_user)):
     response = new_career.delete_career(career_id)
     return response
