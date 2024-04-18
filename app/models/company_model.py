@@ -17,6 +17,7 @@ class Company(Base):
     address = Column(String)
     nit = Column(Integer)
     status = Column(Boolean)
+    website = Column(String)
     creationdate = Column(DateTime)
     
 
@@ -27,5 +28,6 @@ class CompanyIn(BaseModel):
     cellphone: int
     address: str
     status: bool
+    website: str
     nit: int
     creationdate: datetime = datetime.now()

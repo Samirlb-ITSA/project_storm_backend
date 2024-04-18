@@ -17,6 +17,10 @@ class JobOffer(Base):
     status = Column(Boolean, nullable=False)
     creationdate = Column(DateTime, default=datetime.now)
     companyid = Column(UUID(as_uuid=True), ForeignKey(Company.companyid))
+    salary = Column(String(255), nullable=False)
+    description = Column(String(255), nullable=True)
+    skills = Column(String(255), nullable=True)
+
 
     # Define the relationship with Applicant
     applicants = relationship("Applicant", back_populates="job_offer")

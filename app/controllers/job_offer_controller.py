@@ -36,7 +36,9 @@ class JobOfferController:
                 "status": job_offer.status,
                 "creationdate": job_offer.creationdate,
                 "companyid": str(job_offer.companyid),
-                "salary": "A definir",
+                "salary": job_offer.salary,
+                "skills": job_offer.skills,
+                "description": job_offer.description,
                 "company": company
             }
 
@@ -64,7 +66,9 @@ class JobOfferController:
                     "status": job_offer.status,
                     "creationdate": job_offer.creationdate,
                     "companyid": str(job_offer.companyid),
-                    "salary": "A definir",
+                    "salary": job_offer.salary,
+                    "skills": job_offer.skills,
+                    "description": job_offer.description,
                     "company": company
                 }
                 
