@@ -36,8 +36,7 @@ class JobOfferController:
                 "status": job_offer.status,
                 "creationdate": job_offer.creationdate,
                 "companyid": str(job_offer.companyid),
-                "companyname": "Company Name",  # Set companyname from backend
-                "companyaddress": "Company Address"  # Set companyaddress from backend
+                "company": company
             }
 
             company = db.query(Company).filter(Company.companyid == job_offer["companyid"]).first()
@@ -56,12 +55,7 @@ class JobOfferController:
             
             job_offers_list = []
             for job_offer in job_offers:
-                company = db.query(Company).filter(Company.companyid == job_offer.companyid).first()
-                if company:
-                    companyname = company.name
-                else:
-                    companyname = "Company Name Not Found"
-                
+                company = db.query(Company).filter(Company.companyid == job_offer.companyid).first()                
                 job_offer_dict = {
                     "offerid": str(job_offer.offerid),
                     "name": job_offer.name,
