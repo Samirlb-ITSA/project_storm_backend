@@ -69,8 +69,7 @@ class JobOfferController:
                     "status": job_offer.status,
                     "creationdate": job_offer.creationdate,
                     "companyid": str(job_offer.companyid),
-                    "companyname": companyname,
-                    "companyaddress": company.address  # You can fetch companyaddress similarly if needed
+                    "company": company
                 }
                 
                 job_offers_list.append(job_offer_dict)
