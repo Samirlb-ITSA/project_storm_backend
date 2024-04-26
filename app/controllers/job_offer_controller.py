@@ -39,7 +39,8 @@ class JobOfferController:
                 "salary": job_offer.salary,
                 "skills": job_offer.skills,
                 "description": job_offer.description,
-                "company": company
+                "company": company,
+                "applicants": job_offer.applicants
             }
 
             company = db.query(Company).filter(Company.companyid == job_offer["companyid"]).first()
@@ -69,7 +70,8 @@ class JobOfferController:
                     "salary": job_offer.salary,
                     "skills": job_offer.skills,
                     "description": job_offer.description,
-                    "company": company
+                    "company": company,
+                    "applicants": job_offer.applicants
                 }
                 
                 job_offers_list.append(job_offer_dict)
