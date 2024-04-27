@@ -1,4 +1,6 @@
 from fastapi import HTTPException
+from models.role_model import Role
+from models.user_model import User
 from config.db_config import get_db_connection
 from models.job_offer_model import JobOffer, JobOfferIn
 from models.company_model import Company
@@ -40,7 +42,8 @@ class JobOfferController:
                 "skills": job_offer.skills,
                 "description": job_offer.description,
                 "company": company,
-                "applicants": job_offer.applicants
+                "applicants": { job_offer.applicants, 
+                                }
             }
 
             company = db.query(Company).filter(Company.companyid == job_offer["companyid"]).first()
@@ -49,6 +52,8 @@ class JobOfferController:
             return job_offer_dict
         finally:
             db.close()
+
+    from sqlalchemy.orm import joinedload
 
     def get_job_offers(self):
         db = get_db_connection()
@@ -71,14 +76,29 @@ class JobOfferController:
                     "skills": job_offer.skills,
                     "description": job_offer.description,
                     "company": company,
-                    "applicants": job_offer.applicants
+                    "applicants": []
                 }
+                
+                for applicant in job_offer.applicants:
+                    user = db.query(User).filter(User.userid == applicant.userid).first()
+                    if user:
+                        role = db.query(Role).filter(Role.roleid == user.roles[0].roleid).first()
+                        role_name = role.name if role else None
+                        applicant_dict = {
+                            "applicantid": str(applicant.applicantid),
+                            "offerid": str(applicant.offerid),
+                            "userid": str(applicant.userid),
+                            "name": user.firstname + " " + user.lastname,
+                            "role": role_name
+                        }
+                        job_offer_dict["applicants"].append(applicant_dict)
                 
                 job_offers_list.append(job_offer_dict)
             
             return {"resultado": job_offers_list}
         finally:
             db.close()
+
 
 
     def update_job_offer(self, job_offer: JobOfferIn):
